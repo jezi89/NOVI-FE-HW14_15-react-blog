@@ -1,24 +1,78 @@
-.title {
-    text-align: center;
+
+.page-container {
+    min-height: calc(100vh - var(--navbar-height));
+    overflow-y: visible;
+    width: 100%;
+    padding: 2rem 1rem;
+    color: white;
+    background: rgb(44, 47, 57);
+    background: linear-gradient(37deg, rgba(44, 47, 57, 1) 0%, rgba(0, 0, 0, 1) 8%, rgba(80, 83, 92, 1) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
 }
 
+.page-container img {
+    width: 80%;
+    max-width: 500px;
+    height: auto;
+}
+
+
 .mainTitle {
-    font-size: 3em;
+    font-size: clamp(1.5em, 5vw, 3em);
     line-height: 1.1;
     text-align: center;
+    width: 100%;
+    max-width: 90%;
 }
 
 .mainSubTitle {
     text-align: center;
+    font-size: clamp(0.8em, 4vw, 1em);
 }
 
+.subtitleContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 90%;
+    text-align: center;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    justify-content: center; /* Center the wrapped content */
+}
 
-.bigEmoji {
+.emojiLink {
     font-size: 2em;
-    vertical-align: sub;
     color: inherit;
+    text-decoration: none;
+    line-height: 1;
+    display: inline-flex; /* Better for alignment with text */
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-.bigEmoji a {
-    text-decoration: none;
+/* Responsive styles */
+@media (max-width: 768px) {
+    .mainTitle {
+        font-size: 2em;
+    }
+
+    .mainSubTitle {
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    .subtitleContainer {
+        flex-direction: column; /* Stack vertically on very small screens */
+        gap: 0.25rem;
+    }
+
+    .emojiLink {
+        margin-top: 0.5rem; /* Add some space between text and emoji */
+    }
 }

@@ -5,6 +5,8 @@
   --color-secondary: #2C2F39;
   --color-tertiary: #50535C;
   --color-white: #FFFFFF;
+  --navbar-height: 60px; /* Adjust based on your navbar size */
+
 }
 
 * {

@@ -1,7 +1,7 @@
+import PostForm from "../components/PostForm.jsx";
+
 export function NewPost() {
     return (
-        <>
-        <p>NewPost</p>
-        </>
-    )
+        <PostForm />
+    );
 }
