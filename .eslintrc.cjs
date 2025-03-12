@@ -1,5 +1,9 @@
 module.exports = {
-  env: { browser: true, es2020: true },
+  env: {
+    browser: true,
+    es2020: true,
+    node: true  // Add this line to recognize Node.js globals like 'module'
+  },
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
@@ -13,5 +17,4 @@ module.exports = {
     'react-refresh/only-export-components': 'warn',
     'react/prop-types': 'off'
   },
-
 }

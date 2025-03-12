@@ -1,0 +1,24 @@
+.title {
+    text-align: center;
+}
+
+.mainTitle {
+    font-size: 3em;
+    line-height: 1.1;
+    text-align: center;
+}
+
+.mainSubTitle {
+    text-align: center;
+}
+
+
+.bigEmoji {
+    font-size: 2em;
+    vertical-align: sub;
+    color: inherit;
+}
+
+.bigEmoji a {
+    text-decoration: none;
+}

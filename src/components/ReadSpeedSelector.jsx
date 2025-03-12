@@ -1,5 +1,4 @@
-// src/components/ReadSpeedSelector.jsx
-import {useReadSpeed} from "../contexts/ReadSpeedContext.jsx";
+import {useReadSpeed} from "../hooks/useReadSpeed.js";
 
 function ReadSpeedSelector() {
     const { readSpeed, setReadSpeed } = useReadSpeed();
@@ -11,7 +10,7 @@ function ReadSpeedSelector() {
     return (
         <div className="read-speed-selector">
             <label>
-                Leessnelheid:
+                Leessnelheid:{' '}
                 <select value={readSpeed} onChange={handleChange}>
                     <option value="slow">Langzaam</option>
                     <option value="medium">Gemiddeld</option>

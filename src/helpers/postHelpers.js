@@ -11,9 +11,14 @@ export function getPostById(id) {
 }
 
 export function calcReadTime(content, readingSpeed = 'medium') {
-    const wordCount = content.split(/\s+/).length;
-    const readingTimeMinutes = wordCount / readingSpeeds[readingSpeed];
-    return Math.round(readingTimeMinutes);
+    const readingTime = content.split(/\s+/).length / readingSpeeds[readingSpeed];
+    let minutes = Math.floor(readingTime);
+    let seconds = Math.round((readingTime - minutes) * 60 / 10) * 10;
+
+    if (seconds === 60) { minutes++; seconds = 0; }
+
+    const minuteText = minutes === 1 ? "minuut" : "minuten";
+    return `${minutes} ${minuteText}${seconds ? ` en ${seconds} seconden` : ''}`;
 }
 
 export function getPostCount() {

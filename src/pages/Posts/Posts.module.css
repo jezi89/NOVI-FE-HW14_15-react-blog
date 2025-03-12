@@ -1,0 +1,59 @@
+.postsPage {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.postsPage h1 {
+    color: var(--color-secondary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.postsPage :global(.posts-list) {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.postsPage :global(.post-item) {
+    border-radius: 6px;
+    border: 1px solid #eee;
+    padding: 0.8rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.postsPage :global(.post-item:hover) {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.postsPage :global(.post-item a) {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.postTitle {
+    color: var(--color-secondary);
+    font-size: 1.2rem;
+    line-height: 1.3;
+    height: 3.6rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-primary);
+    padding-bottom: 0.5rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    /* New text overflow handling */
+    overflow: hidden;
+    max-height: 3em; /* Same as height */
+}
