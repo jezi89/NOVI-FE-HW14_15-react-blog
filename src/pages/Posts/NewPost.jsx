@@ -1,5 +1,5 @@
-import PostForm from "../../components/PostForm.jsx";
-import PageLayout from '../../components/PageLayout';
+import PostForm from "../../components/PostForm/PostForm.jsx";
+import PageLayout from '../../components/PageLayOut/PageLayout.jsx';
 
 export function NewPost() {
     return (

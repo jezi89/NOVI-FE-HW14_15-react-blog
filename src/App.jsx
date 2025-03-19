@@ -4,7 +4,7 @@ import {Posts} from "./pages/Posts/Posts.jsx";
 import {NewPost} from "./pages/Posts/NewPost.jsx";
 import {About} from "./pages/About/About.jsx";
 import {ErrorPage} from "./pages/Error/ErrorPage.jsx";
-import {NavBar} from "./components/NavBar.jsx";
+import {NavBar} from "./components/NavBar/NavBar.jsx";
 import SinglePost from "./pages/Posts/SinglePost.jsx";
 
 function App() {

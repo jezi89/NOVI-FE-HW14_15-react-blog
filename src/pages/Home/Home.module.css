@@ -11,6 +11,7 @@
     align-items: center;
     box-sizing: border-box;
     position: relative;
+
 }
 
 /* Decoratieve elementen voor de lege ruimtes */
@@ -90,7 +91,7 @@
     max-width: 90%;
     margin-bottom: 0.8em;
     font-weight: 700;
-    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6), 
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6),
                 0 0 20px rgba(var(--color-secondary-rgb), 0.3);
     position: relative;
     z-index: 2;
@@ -188,6 +189,7 @@
 
 .ctaButton:hover {
     background: linear-gradient(135deg, var(--color-secondary-light), var(--color-secondary));
+    color: var(--color-neutral-dark);
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2) inset;
 }
@@ -247,6 +249,7 @@
     0% {
         transform: translateX(-100vw) translateY(0) rotate(15deg);
     }
+
     100% {
         transform: translateX(100vw) translateY(-20vh) rotate(15deg);
     }
@@ -301,7 +304,7 @@
         grid-row: 2;
         margin-left: 0;
     }
-    
+
     .travel-element {
         font-size: 5rem;
     }
@@ -311,7 +314,7 @@
     .homepage-container {
         padding: 2rem 1rem;
     }
-    
+
     .subtitleContainer {
         flex-direction: column;
         gap: 0.5rem;
@@ -320,11 +323,11 @@
     .emojiLink {
         margin-top: 0.75rem;
     }
-    
+
     .mainTitle:after {
         width: 80px;
     }
-    
+
     .travel-element {
         font-size: 4rem;
     }

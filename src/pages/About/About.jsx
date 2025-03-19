@@ -1,5 +1,5 @@
 import './About.css';
-import PageLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayOut/PageLayout.jsx';
 
 export function About() {
     return (

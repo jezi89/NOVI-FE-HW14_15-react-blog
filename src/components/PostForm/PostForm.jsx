@@ -1,5 +1,7 @@
 import { useActionState } from "react";
 import { useNavigate } from "react-router-dom";
+import TextInputField from './TextInputField';
+import TextAreaField from './TextAreaField';
 import './PostForm.css';
 
 function PostForm() {
@@ -66,14 +68,6 @@ function PostForm() {
         null // Initial state
     );
 
-    // Helper function to determine if a field has an error
-    const getFormGroupClassName = (fieldName) => {
-        if (!result?.errors) return "form-group";
-        return result.errors[fieldName] 
-            ? "form-group has-error" 
-            : "form-group has-success";
-    };
-
     return (
         <div className="form-container">
             <h2>Nieuwe Blogpost</h2>
@@ -85,37 +79,34 @@ function PostForm() {
             {isPending && <p className="loading">Bezig met verzenden...</p>}
 
             <form action={submitAction}>
-                <div className={getFormGroupClassName("title")}>
-                    <label htmlFor="title">Titel</label>
-                    <input type="text" id="title" name="title" />
-                    {result?.errors?.title && (
-                        <span className="error">{result.errors.title}</span>
-                    )}
-                </div>
+                <TextInputField 
+                    id="title"
+                    name="title"
+                    label="Titel"
+                    error={result?.errors?.title}
+                />
 
-                <div className={getFormGroupClassName("subtitle")}>
-                    <label htmlFor="subtitle">Ondertitel</label>
-                    <input type="text" id="subtitle" name="subtitle" />
-                    {result?.errors?.subtitle && (
-                        <span className="error">{result.errors.subtitle}</span>
-                    )}
-                </div>
+                <TextInputField 
+                    id="subtitle"
+                    name="subtitle"
+                    label="Ondertitel"
+                    error={result?.errors?.subtitle}
+                />
 
-                <div className={getFormGroupClassName("author")}>
-                    <label htmlFor="author">Auteur</label>
-                    <input type="text" id="author" name="author" />
-                    {result?.errors?.author && (
-                        <span className="error">{result.errors.author}</span>
-                    )}
-                </div>
+                <TextInputField 
+                    id="author"
+                    name="author"
+                    label="Auteur"
+                    error={result?.errors?.author}
+                />
 
-                <div className={getFormGroupClassName("content")}>
-                    <label htmlFor="content">Bericht</label>
-                    <textarea id="content" name="content" rows="10"></textarea>
-                    {result?.errors?.content && (
-                        <span className="error">{result.errors.content}</span>
-                    )}
-                </div>
+                <TextAreaField 
+                    id="content"
+                    name="content"
+                    label="Bericht"
+                    error={result?.errors?.content}
+                    inputProps={{ rows: 10 }}
+                />
 
                 <button type="submit" disabled={isPending}>
                     {isPending ? 'Bezig met verzenden...' : 'Verzenden'}

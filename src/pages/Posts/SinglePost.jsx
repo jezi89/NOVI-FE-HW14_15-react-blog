@@ -1,7 +1,7 @@
 import {Link, useParams} from "react-router-dom";
 import formatDate from "../../helpers/formatDate.js";
 import {calcReadTime, getPostById} from "../../helpers/postHelpers.js";
-import PageLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayOut/PageLayout.jsx';
 import './SinglePost.css';
 
 function SinglePost() {

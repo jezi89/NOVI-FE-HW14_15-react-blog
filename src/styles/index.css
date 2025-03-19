@@ -44,7 +44,6 @@
   /* System variables */
   --navbar-height: 60px;
   --content-padding: 1.5rem;
-
   --container-margin-top: calc(var(--navbar-height) + 1.5rem);
 
   /* Font families */
@@ -58,6 +57,12 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+html, body {
+  overflow-x: hidden; /* Voorkomt horizontale scrollbars op de hele pagina */
+  width: 100%; /* Beperkt de breedte tot de viewport */
+}
+
 
 body {
   font-family: var(--font-body);
@@ -129,7 +134,10 @@ p {
   font-weight: 600;
 }
 
+
+
 /* Container consistent styling */
+
 .page-container, 
 .content-container {
   width: 100%;
@@ -138,6 +146,7 @@ p {
   padding-right: var(--content-padding);
   padding-left: var(--content-padding);
   padding-bottom: 2rem;
+
 }
 
 /* Link styling */

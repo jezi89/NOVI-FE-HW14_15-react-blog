@@ -3,7 +3,7 @@ import {useReadSpeed} from "../../hooks/useReadSpeed.js";
 import {calcReadTime, getAllPosts, getPostCount} from "../../helpers/postHelpers.js";
 import {Link} from "react-router-dom";
 import styles from "./Posts.module.css";
-import PageLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayOut/PageLayout.jsx';
 
 /**
  * @typedef {object} Post
