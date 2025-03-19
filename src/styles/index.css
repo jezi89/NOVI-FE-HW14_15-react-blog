@@ -1,0 +1,194 @@
+/* Google Fonts import */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap');
+
+:root {
+  /* Main colors - aangepast voor beter contrast */
+  --color-primary: #0f2e28; /* Deepened forest green for better contrast */
+  --color-secondary: #e09e54; /* Warm sunset orange */
+  --color-tertiary: #5a9178; /* Sage green */
+  --color-ribbon: #c25d30; /* Terra cotta */
+  --color-neutral-light: #f4f1eb; /* Soft parchment */
+  --color-neutral-dark: #1a1a1a; /* Deepened charcoal for better text contrast */
+
+  /* Primary shades (forest green) */
+  --color-primary-dark: #0a1d1a; /* Deepened forest shadow */
+  --color-primary-medium: #1c3d34; /* Deepened pine forest */
+  --color-primary-light: #3e7264; /* Mountain sage */
+
+  /* Secondary shades (sunset tones) */
+  --color-secondary-dark: #b77d3a; /* Bronze sunset */
+  --color-secondary-medium: #e09e54; /* Golden hour */
+  --color-secondary-light: #f3c78e; /* Soft sand dunes */
+
+  /* Accent shades (sky & water) */
+  --color-accent-dark: #355179; /* Deepened ocean */
+  --color-accent-medium: #7ca6cf; /* Clear sky */
+  --color-accent-light: #b8d8eb; /* Shallow water */
+
+  /* Travel-specific colors */
+  --color-horizon: #ffcb85; /* Horizon glow at sunset */
+  --color-terrain: #8c7154; /* Mountain/terrain brown */
+  --color-vegetation: #739e6b; /* Lush vegetation */
+
+  /* Site gradient background - voor consistente uitstraling */
+  --gradient-dark: linear-gradient(37deg, rgba(15, 46, 40, 1) 0%, rgba(10, 29, 26, 1) 8%, rgba(28, 61, 52, 1) 100%);
+
+  /* Functional colors */
+  --color-background: var(--color-neutral-light);
+  --color-text: var(--color-neutral-dark);
+  --color-heading: var(--color-primary);
+  --color-link: var(--color-secondary-dark);
+  --color-link-hover: var(--color-secondary);
+  --color-border: var(--color-tertiary);
+
+  /* System variables */
+  --navbar-height: 60px;
+  --content-padding: 1.5rem;
+  --container-margin-top: calc(var(--navbar-height) + 1.5rem);
+
+  /* Font families */
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Lato', sans-serif;
+  --font-accent: 'Montserrat', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden; /* Voorkomt horizontale scrollbars op de hele pagina */
+  width: 100%; /* Beperkt de breedte tot de viewport */
+}
+
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  background-color: var(--color-background);
+}
+
+button, input, select, textarea {
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--color-heading);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Heading stijlen met effecten */
+h1 {
+  font-size: 3.2em;
+  margin-block: 0.5em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+/* Underline effect voor h1 */
+h1:after {
+  content: '';
+  position: absolute;
+  bottom: -0.15em;
+  left: 0;
+  width: 2em;
+  height: 3px;
+  background-color: var(--color-secondary);
+}
+
+h2 {
+  font-size: 2.4em;
+  margin-block: 0.6em;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.08);
+}
+
+h3 {
+  font-size: 1.8em;
+  margin-block: 0.7em;
+}
+
+h4 {
+  font-size: 1.5em;
+  margin-block: 1em;
+}
+
+p {
+  margin-block: 0.5em;
+}
+
+/* Accent text class */
+.accent-text {
+  font-family: var(--font-accent);
+  font-weight: 600;
+}
+
+
+
+/* Container consistent styling */
+
+.page-container, 
+.content-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-right: var(--content-padding);
+  padding-left: var(--content-padding);
+  padding-bottom: 2rem;
+
+}
+
+/* Link styling */
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+
+a:hover {
+  color: var(--color-link-hover);
+}
+
+/* Button styling */
+button, 
+.button {
+  font-family: var(--font-accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+/* Dark background variant */
+.dark-bg {
+  background: var(--gradient-dark);
+  color: var(--color-neutral-light);
+}
+
+.dark-bg h1, 
+.dark-bg h2, 
+.dark-bg h3, 
+.dark-bg h4 {
+  color: var(--color-neutral-light);
+}
+
+.dark-bg h1:after {
+  background-color: var(--color-horizon);
+}
+
+/* Shadow effects */
+.shadow-box {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
