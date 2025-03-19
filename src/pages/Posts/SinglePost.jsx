@@ -58,7 +58,7 @@ function SinglePost() {
                             
                             <div className="post-readtime">
                                 <span>⏱️</span>
-                                <span>{readingTime} min leestijd</span>
+                                <span>{readingTime}</span>
                             </div>
                         </div>
                         

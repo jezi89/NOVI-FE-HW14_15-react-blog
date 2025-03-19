@@ -17,8 +17,8 @@ export function calcReadTime(content, readingSpeed = 'medium') {
 
     if (seconds === 60) { minutes++; seconds = 0; }
 
-    const minuteText = minutes === 1 ? "minuut" : "minuten";
-    return `${minutes} ${minuteText}${seconds ? ` en ${seconds} seconden` : ''}`;
+    const minuteText = minutes === 1 ? "minuut" : "min.";
+    return `leestijd: ${minutes} ${minuteText}${seconds ? ` & ${seconds} sec.` : ''}`;
 }
 
 export function getPostCount() {

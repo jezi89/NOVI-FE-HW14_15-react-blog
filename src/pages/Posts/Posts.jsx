@@ -55,7 +55,7 @@ export function Posts() {
                                     <span className={styles.postAuthor}>{post?.author || 'Onbekend'}</span>
                                 </div>
                                 <div className={styles.metaRight}>
-                                    <span className={styles.readTime}>{calcReadTime(post.content, readSpeed)} min</span>
+                                    <span className={styles.readTime}>{calcReadTime(post.content, readSpeed)}</span>
                                 </div>
                             </div>
                         </Link>
