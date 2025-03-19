@@ -1,0 +1,5 @@
+.pageLayout {
+    margin-top: var(--container-margin-top);
+    width: 100%;
+    box-sizing: border-box;
+}

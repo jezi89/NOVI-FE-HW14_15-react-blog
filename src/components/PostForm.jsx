@@ -1,5 +1,6 @@
 import { useActionState } from "react";
 import { useNavigate } from "react-router-dom";
+import './PostForm.css';
 
 function PostForm() {
     const navigate = useNavigate();
@@ -65,6 +66,14 @@ function PostForm() {
         null // Initial state
     );
 
+    // Helper function to determine if a field has an error
+    const getFormGroupClassName = (fieldName) => {
+        if (!result?.errors) return "form-group";
+        return result.errors[fieldName] 
+            ? "form-group has-error" 
+            : "form-group has-success";
+    };
+
     return (
         <div className="form-container">
             <h2>Nieuwe Blogpost</h2>
@@ -76,7 +85,7 @@ function PostForm() {
             {isPending && <p className="loading">Bezig met verzenden...</p>}
 
             <form action={submitAction}>
-                <div className="form-group">
+                <div className={getFormGroupClassName("title")}>
                     <label htmlFor="title">Titel</label>
                     <input type="text" id="title" name="title" />
                     {result?.errors?.title && (
@@ -84,7 +93,7 @@ function PostForm() {
                     )}
                 </div>
 
-                <div className="form-group">
+                <div className={getFormGroupClassName("subtitle")}>
                     <label htmlFor="subtitle">Ondertitel</label>
                     <input type="text" id="subtitle" name="subtitle" />
                     {result?.errors?.subtitle && (
@@ -92,7 +101,7 @@ function PostForm() {
                     )}
                 </div>
 
-                <div className="form-group">
+                <div className={getFormGroupClassName("author")}>
                     <label htmlFor="author">Auteur</label>
                     <input type="text" id="author" name="author" />
                     {result?.errors?.author && (
@@ -100,7 +109,7 @@ function PostForm() {
                     )}
                 </div>
 
-                <div className="form-group">
+                <div className={getFormGroupClassName("content")}>
                     <label htmlFor="content">Bericht</label>
                     <textarea id="content" name="content" rows="10"></textarea>
                     {result?.errors?.content && (
@@ -109,7 +118,7 @@ function PostForm() {
                 </div>
 
                 <button type="submit" disabled={isPending}>
-                    Verzenden
+                    {isPending ? 'Bezig met verzenden...' : 'Verzenden'}
                 </button>
             </form>
         </div>

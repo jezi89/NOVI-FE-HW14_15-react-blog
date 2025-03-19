@@ -1,12 +1,11 @@
-import './styles/App.css'
 import {Route, Routes} from "react-router-dom";
 import {Home} from "./pages/Home/Home.jsx";
 import {Posts} from "./pages/Posts/Posts.jsx";
-import {NewPost} from "./pages/NewPost.jsx";
-import {About} from "./pages/About.jsx";
+import {NewPost} from "./pages/Posts/NewPost.jsx";
+import {About} from "./pages/About/About.jsx";
 import {ErrorPage} from "./pages/Error/ErrorPage.jsx";
 import {NavBar} from "./components/NavBar.jsx";
-import SinglePost from "./pages/SinglePost.jsx";
+import SinglePost from "./pages/Posts/SinglePost.jsx";
 
 function App() {
     return (

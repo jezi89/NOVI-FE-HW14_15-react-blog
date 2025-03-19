@@ -1,66 +1,124 @@
-/* Import Google Fonts */
-@import url("//fonts.googleapis.com/css2?family=Indie+Flower:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap");
-
 /* Navigation */
-
 nav {
-    padding: 1rem;
-    background-color: #2c2f39;
+    padding: 0 1.5rem;
+    background-color: var(--color-primary-dark);
     height: var(--navbar-height);
     box-sizing: border-box;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
+
+.brand {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-neutral-light);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+}
+
 /* List */
 nav ul {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 2rem;
+    gap: 2.5rem;
     list-style-type: none;
     margin: 0;
     padding: 0;
-    font-family: 'Indie Flower', cursive;
+    font-family: var(--font-accent);
 }
 
 /* List Items */
 nav ul li {
-    padding: 0.5rem;
+    padding: 0.5rem 0;
+    position: relative;
 }
 
 /* Links */
 nav ul li a {
-    color: white;
+    color: var(--color-neutral-light);
     text-decoration: none;
-    font-size: 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.3s;
+    padding: 0.5rem 0;
+    position: relative;
+}
+
+/* Underline effect */
+nav ul li a:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--color-horizon);
+    transition: width 0.3s ease;
 }
 
 /* Active Link */
 nav ul li a.active {
-    color: #38e991;
+    color: var(--color-horizon);
+}
+
+nav ul li a.active:after {
+    width: 100%;
 }
 
 /* Hover Effect */
 nav ul li a:hover {
-    color: #38e991;
+    color: var(--color-horizon);
+}
+
+nav ul li a:hover:after {
+    width: 100%;
 }
 
 /* Mobile Menu */
+@media (max-width: 768px) {
+    nav {
+        padding: 0 1rem;
+    }
+    
+    .brand {
+        font-size: 1.3rem;
+    }
+    
+    nav ul {
+        gap: 1.5rem;
+    }
+}
+
 @media (max-width: 480px) {
     nav {
-        padding: 0.5rem;
+        padding: 0 0.75rem;
     }
 
     nav ul {
-        gap: 0.5rem;
+        gap: 1rem;
     }
 
     nav ul li {
-        padding: 0.25rem;
+        padding: 0.25rem 0;
     }
 
     nav ul li a {
-        font-size: 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .brand {
+        font-size: 1.1rem;
     }
 }
 
