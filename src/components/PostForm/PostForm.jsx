@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import TextInputField from './TextInputField';
 import TextAreaField from './TextAreaField';
 import './PostForm.css';
+import {postsAddService} from "../../services/postsFetchService.js";
 
 function PostForm() {
     const navigate = useNavigate();
@@ -51,19 +52,22 @@ function PostForm() {
                 shares: 0
             };
 
-            // Log the complete post to console
-            console.log(completePost);
+         try {
+             const newPost = await postsAddService(completePost)
 
-            // Wait a bit to simulate processing
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // After successful submission, redirect to posts page
+         // After successful submission, redirect to posts page
             navigate("/posts");
 
             return {
                 type: "success",
                 message: "Post succesvol aangemaakt!"
             };
+        } catch (e) {
+         return {
+             type: "error",
+             message: "er ging iets mis bij het opslaan van de post."
+         }
+         }
         },
         null // Initial state
     );
