@@ -1,9 +1,7 @@
 import ReadSpeedSelector from "../../components/ReadSpeedSelector.jsx";
 import styles from "../../components/postsGrid/PostsGrid.module.css";
 import PageLayout from '../../components/pageLayOut/PageLayout.jsx';
-
 import PostsGrid from "../../components/postsGrid/PostsGrid.jsx";
-import {Button} from "../../components/buttons/PostButton.jsx";
 
 /**
  * @typedef {object} Post
@@ -20,11 +18,11 @@ export function Posts() {
 
     return (
         <PageLayout className={styles.postsPage}>
-            <h1>Alle Posts</h1>
+
             <PostsGrid/>
             <ReadSpeedSelector/>
-            <Button name="addPost"> Klik om test post toe te voegen</Button>
-            <Button name="deletePost18"> Klik om post 18 te verwijderen</Button>
+
         </PageLayout>
     );
 }
+/* If the .postItem class is in another CSS module */

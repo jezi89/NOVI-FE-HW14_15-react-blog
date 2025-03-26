@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import TextInputField from './TextInputField';
 import TextAreaField from './TextAreaField';
 import './PostForm.css';
-import {postsAddService} from "../../services/postsFetchService.js";
+import {calculateReadTimeinMinutes, createPost} from "../../helpers/postHelpers.js";
 
 function PostForm() {
     const navigate = useNavigate();
@@ -35,10 +35,8 @@ function PostForm() {
                 return { type: "error", errors };
             }
 
-            // Calculate read time (words * 0.3 / 100)
-            const wordCount = content.trim().split(/\s+/).length;
-            const readTimeRaw = wordCount * 0.3 / 100;
-            const readTime = Math.round(readTimeRaw);
+            // Calculate read time
+            const readTime = calculateReadTimeinMinutes(content); // Gebruik dezelfde berekening als elders
 
             // Create the complete post object
             const completePost = {
@@ -53,10 +51,10 @@ function PostForm() {
             };
 
          try {
-             const newPost = await postsAddService(completePost)
+             const newPost = await createPost(completePost)
 
          // After successful submission, redirect to posts page
-            navigate("/posts");
+            navigate(`/posts/${newPost.id}`);
 
             return {
                 type: "success",

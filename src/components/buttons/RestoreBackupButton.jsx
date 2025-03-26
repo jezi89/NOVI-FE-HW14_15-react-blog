@@ -1,39 +1,28 @@
-import React, {useState} from 'react';
-import {getBackup} from "../../services/backupService.js";
+import { getLatestBackup } from "../../services/backupService";
+import styles from "./Button.module.css";
 
-function RestoreBackupButton({onRestore}) {
-    const [isRestoring, setIsRestoring] = useState(false);
-    // const [backup, setBackup] = useState(null);
+function RestoreBackupButton({ onRestore }) {
+    const handleRestore = () => {
+        const backup = getLatestBackup();
 
-    const backup = getBackup();
-
-    const handleRestore = async () => {
-        if (!backup) {
-            alert("No backup available to restore!")
+        if (!backup || !backup.data) {
+            alert("Geen backup beschikbaar om te herstellen");
             return;
         }
-
-        setIsRestoring(true)
-        try {
-            await onRestore(true);
-            alert(`Backup restored from${new Date(backup.timestamp).toLocaleString()}`);
-
-        } catch (e) {
-            console.error('Failed to restore backup', e)
-            alert("failed to restore backup");
-        } finally {
-            setIsRestoring(false)
+        
+        if (onRestore) {
+            onRestore(backup.data);
         }
+
+        alert(`Backup van: ${new Date(backup.timestamp).toLocaleString()} hersteld`);
     };
 
     return (
         <button
             onClick={handleRestore}
-            disabled={isRestoring || !backup}
-            className="restore-button"
+            className={styles.restoreButton}
         >
-            {isRestoring ? 'Bezig met herstellen...' : 'Herstel van backup'}
-
+            Herstel van Backup
         </button>
     );
 }
