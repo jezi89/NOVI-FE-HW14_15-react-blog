@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useReducer, useEffect} from 'react';
+import React, {createContext, useContext, useReducer, useEffect, useState} from 'react';
 import {fetchPosts} from '../services/postsFetchService';
 import {
     getLatestBackup,
@@ -6,7 +6,8 @@ import {
     saveInitialBackup,
     getDeletedPosts,
     saveDeletedPost as saveDeletedPostToStorage,
-    removeDeletedPost as removeDeletedPostFromStorage
+    removeDeletedPost as removeDeletedPostFromStorage,
+    createManualBackup
 } from '../services/backupService';
 import axios from 'axios';
 
@@ -27,7 +28,8 @@ export const DATA_ACTIONS = {
     RESTORE_BACKUP: 'RESTORE_BACKUP',
     UPDATE_DELETED_POSTS_COUNT: 'UPDATE_DELETED_POSTS_COUNT',
     SET_OFFLINE_MODE: 'SET_OFFLINE_MODE',
-    SET_SYNC_STATUS: 'SET_SYNC_STATUS'
+    SET_SYNC_STATUS: 'SET_SYNC_STATUS',
+    SET_LOADING_COMPLETE: 'SET_LOADING_COMPLETE'
 };
 
 // Initiële state
@@ -75,6 +77,7 @@ function dataReducer(state, action) {
             return {
                 ...state,
                 posts: action.payload.data,
+                loading: false,
                 usingBackup: true,
                 backupTimestamp: action.payload.timestamp,
                 error: null
@@ -84,6 +87,7 @@ function dataReducer(state, action) {
                 ...state,
                 posts: action.payload.data,
                 serverPosts: action.payload.data, // Aanname: server is gesynchroniseerd
+                loading: false,
                 usingBackup: true,
                 backupTimestamp: action.payload.timestamp,
                 error: null,
@@ -121,6 +125,7 @@ function dataReducer(state, action) {
                 ...state,
                 posts: action.payload.data,
                 serverPosts: action.payload.data, // Aanname: server is gesynchroniseerd
+                loading: false,
                 usingBackup: true,
                 backupTimestamp: action.payload.timestamp,
                 error: null,
@@ -141,6 +146,11 @@ function dataReducer(state, action) {
                 ...state,
                 syncStatus: action.payload
             };
+        case DATA_ACTIONS.SET_LOADING_COMPLETE:
+            return {
+                ...state,
+                loading: false
+            };
         default:
             return state;
     }
@@ -159,6 +169,17 @@ const getDummyData = () => {
             readTime: 1,
             comments: 0,
             shares: 0
+        },
+        {
+            id: 1000,
+            title: "Voorbeeld blogpost",
+            subtitle: "Dit is een voorbeeld van een blogpost in offline modus",
+            content: "Dit is een voorbeeldblogpost die wordt weergegeven wanneer de server niet bereikbaar is en er geen opgeslagen backups zijn. Je kunt lokaal wijzigingen aanbrengen die worden gesynchroniseerd zodra de server weer beschikbaar is.",
+            author: "Blog Systeem",
+            created: new Date().toISOString(),
+            readTime: 2,
+            comments: 0,
+            shares: 0
         }
     ];
 };
@@ -166,6 +187,12 @@ const getDummyData = () => {
 // Provider component
 export function DataProvider({children}) {
     const [state, dispatch] = useReducer(dataReducer, initialState);
+    const [initialized, setInitialized] = useState(false);
+    
+    // Functie om te controleren of er een backup in localStorage is
+    const hasLocalBackup = () => {
+        return getLatestBackup() !== null;
+    };
 
     // Functie om te controleren of server bereikbaar is
     const checkServerConnection = async () => {
@@ -173,13 +200,46 @@ export function DataProvider({children}) {
             await axios.get('http://localhost:3000/posts', {timeout: 3000});
             return true;
         } catch (error) {
+            console.warn("Server niet bereikbaar:", error.message);
             return false;
         }
     };
 
     // Functie om posts te laden
-    const loadPosts = async () => {
+    const loadPosts = async (forceReload = false) => {
+        if (state.loading === false && !forceReload) {
+            // Voorkom dubbele laadacties
+            return;
+        }
+        
         dispatch({type: DATA_ACTIONS.LOAD_POSTS_START});
+
+        // Eerst proberen we content uit localStorage te halen (local-first approach)
+        const backup = getLatestBackup();
+        let localContentAvailable = false;
+        
+        if (backup && backup.data && backup.data.length > 0) {
+            // Filter verwijderde posts uit backup
+            const deletedPosts = getDeletedPosts();
+            const deletedPostIds = new Set(deletedPosts.map(post => post.id));
+            const filteredBackupData = backup.data.filter(post => !deletedPostIds.has(post.id));
+            
+            if (filteredBackupData.length > 0) {
+                // Direct lokale content tonen
+                console.log("Lokale backup gevonden, deze wordt eerst getoond");
+                dispatch({
+                    type: DATA_ACTIONS.SET_USING_BACKUP,
+                    payload: {...backup, data: filteredBackupData}
+                });
+                localContentAvailable = true;
+                
+                // Bijwerken verwijderde posts teller
+                dispatch({
+                    type: DATA_ACTIONS.UPDATE_DELETED_POSTS_COUNT,
+                    payload: deletedPosts.length
+                });
+            }
+        }
 
         // Controleer server connectie
         const isServerAvailable = await checkServerConnection();
@@ -187,31 +247,74 @@ export function DataProvider({children}) {
 
         if (isServerAvailable) {
             try {
+                console.log("Server is beschikbaar, ophalen actuele posts");
                 const data = await fetchPosts();
 
-                if (data) {
+                if (data && data.length > 0) {
                     // Filter verwijderde posts
                     const deletedPosts = getDeletedPosts();
                     const deletedPostIds = new Set(deletedPosts.map(post => post.id));
                     const filteredData = data.filter(post => !deletedPostIds.has(post.id));
-
+                    
+                    // Vervang de backup content met serverdata
                     dispatch({type: DATA_ACTIONS.LOAD_POSTS_SUCCESS, payload: filteredData});
 
                     // Maak initiële backup als die nog niet bestaat
                     if (!isBackupInitialized()) {
                         saveInitialBackup(data);
+                        console.log("Initiële backup aangemaakt");
+                    }
+                    
+                    // Werk ook de laatste backup bij als er nog geen handmatige backups zijn gemaakt
+                    if (!backup || backup.name === "Initiële backup") {
+                        createManualBackup(data, "Automatische server-sync");
+                        console.log("Backup bijgewerkt met server data");
+                    }
+                } else {
+                    console.warn("Server gaf lege data terug");
+                    
+                    if (!localContentAvailable) {
+                        // Als er geen lokale content was en de server gaf lege data
+                        const dummyData = getDummyData();
+                        dispatch({type: DATA_ACTIONS.LOAD_POSTS_SUCCESS, payload: dummyData});
+                        saveInitialBackup(dummyData);
                     }
                 }
             } catch (error) {
                 console.error("Fout bij het ophalen van posts:", error);
-                dispatch({
-                    type: DATA_ACTIONS.LOAD_POSTS_ERROR,
-                    payload: "Kon posts niet laden. Probeer de backup te herstellen."
-                });
+                
+                if (!localContentAvailable) {
+                    // Als we nog geen content hebben kunnen tonen, probeer alsnog de backup
+                    const backup = getLatestBackup();
+                    if (backup && backup.data) {
+                        // Filter verwijderde posts uit backup
+                        const deletedPosts = getDeletedPosts();
+                        const deletedPostIds = new Set(deletedPosts.map(post => post.id));
+                        const filteredBackupData = backup.data.filter(post => !deletedPostIds.has(post.id));
 
-                // Probeer backup te herstellen
-                const backup = getLatestBackup();
-                if (backup && backup.data) {
+                        dispatch({
+                            type: DATA_ACTIONS.SET_USING_BACKUP,
+                            payload: {...backup, data: filteredBackupData}
+                        });
+                    } else {
+                        // Echt alles is mislukt, toon dummy data
+                        const dummyData = getDummyData();
+                        dispatch({type: DATA_ACTIONS.LOAD_POSTS_SUCCESS, payload: dummyData});
+                        saveInitialBackup(dummyData);
+                    }
+                    
+                    dispatch({
+                        type: DATA_ACTIONS.LOAD_POSTS_ERROR,
+                        payload: "Kon posts niet laden van server. Backup of dummy content geladen."
+                    });
+                }
+            }
+        } else {
+            console.log("Server niet beschikbaar");
+            
+            if (!localContentAvailable) {
+                // Als er nog geen content getoond is en de server is offline
+                if (backup && backup.data && backup.data.length > 0) {
                     // Filter verwijderde posts uit backup
                     const deletedPosts = getDeletedPosts();
                     const deletedPostIds = new Set(deletedPosts.map(post => post.id));
@@ -221,34 +324,20 @@ export function DataProvider({children}) {
                         type: DATA_ACTIONS.SET_USING_BACKUP,
                         payload: {...backup, data: filteredBackupData}
                     });
+                } else {
+                    // Geen enkele backup beschikbaar, gebruik dummy data
+                    const dummyData = getDummyData();
+                    dispatch({type: DATA_ACTIONS.LOAD_POSTS_SUCCESS, payload: dummyData});
+                    
+                    // Sla dummy data op als backup voor later gebruik
+                    saveInitialBackup(dummyData);
                 }
             }
-        } else {
-            // Offline modus: gebruik backup of dummy data
-            console.log("Server niet beschikbaar, gebruik lokale backup");
-            const backup = getLatestBackup();
-
-            if (backup && backup.data) {
-                // Filter verwijderde posts uit backup
-                const deletedPosts = getDeletedPosts();
-                const deletedPostIds = new Set(deletedPosts.map(post => post.id));
-                const filteredBackupData = backup.data.filter(post => !deletedPostIds.has(post.id));
-
-                dispatch({
-                    type: DATA_ACTIONS.SET_USING_BACKUP,
-                    payload: {...backup, data: filteredBackupData}
-                });
-            } else {
-                // Geen backup beschikbaar, gebruik dummy data
-                const dummyData = getDummyData();
-                dispatch({
-                    type: DATA_ACTIONS.LOAD_POSTS_SUCCESS,
-                    payload: dummyData
-                });
-                // Sla dummy data op als backup
-                saveInitialBackup(dummyData);
-            }
         }
+        
+        // Zorg dat loading state altijd wordt afgesloten
+        dispatch({type: DATA_ACTIONS.SET_LOADING_COMPLETE});
+        setInitialized(true);
     };
 
     // Optimistic update functies
@@ -266,6 +355,12 @@ export function DataProvider({children}) {
 
         // Sla verwijderde post op in localStorage
         saveDeletedPostToStorage(postToDelete);
+        
+        // Maak een backup van de huidige staat na verwijdering
+        createManualBackup(
+            state.posts.filter(post => post.id !== postId),
+            `Automatische backup na verwijdering van post: ${postToDelete.title}`
+        );
 
         // Probeer te synchroniseren met server als we online zijn
         if (!state.offlineMode) {
@@ -296,6 +391,13 @@ export function DataProvider({children}) {
 
         // Verwijder uit verwijderde posts in localStorage
         removeDeletedPostFromStorage(post.id);
+        
+        // Maak een backup na het herstellen
+        const updatedPosts = [...state.posts, postData];
+        createManualBackup(
+            updatedPosts,
+            `Automatische backup na herstel van post: ${postData.title}`
+        );
 
         // Probeer te synchroniseren met server als we online zijn
         if (!state.offlineMode) {
@@ -326,8 +428,10 @@ export function DataProvider({children}) {
 
     // Effect om posts te laden bij eerste render
     useEffect(() => {
-        loadPosts();
-    }, []);
+        if (!initialized) {
+            loadPosts();
+        }
+    }, [initialized]);
 
     // Effect om het aantal verwijderde posts bij te werken bij eerste render
     useEffect(() => {
@@ -346,8 +450,13 @@ export function DataProvider({children}) {
             // Als status verandert van offline naar online, probeer te synchroniseren
             if (isServerAvailable && state.offlineMode) {
                 dispatch({type: DATA_ACTIONS.SET_OFFLINE_MODE, payload: false});
-                // TODO: Synchroniseer eventuele offline wijzigingen
-                await loadPosts(); // Herlaad posts bij herstel van verbinding
+                
+                // Als de verbinding is hersteld, vraag of we moeten synchroniseren
+                if (state.posts.length > 0 && hasLocalBackup()) {
+                    // TODO: Implementeer een UI-prompt voor synchronisatiebeslissing
+                    // Voor nu laden we gewoon de server data maar behouden lokale wijzigingen
+                    await loadPosts(true);
+                }
             } else if (!isServerAvailable && !state.offlineMode) {
                 dispatch({type: DATA_ACTIONS.SET_OFFLINE_MODE, payload: true});
             }
@@ -357,7 +466,7 @@ export function DataProvider({children}) {
         const interval = setInterval(checkConnection, 30000);
 
         return () => clearInterval(interval);
-    }, [state.offlineMode]);
+    }, [state.offlineMode, state.posts.length]);
 
     // Waarde die we aan de context doorgeven
     const value = {
@@ -365,7 +474,9 @@ export function DataProvider({children}) {
         dispatch,
         loadPosts,
         optimisticDeletePost,
-        optimisticRestorePost
+        optimisticRestorePost,
+        checkServerConnection,
+        hasLocalBackup
     };
 
     return (

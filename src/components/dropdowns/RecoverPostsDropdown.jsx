@@ -1,9 +1,9 @@
-// In src/components/dropdowns/RecoverPostsDropdown.jsx
-import {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {getDeletedPosts} from '../../services/backupService.js';
 import {restoreDeletedPost} from '../../helpers/postHelpers.js';
 import {useData, DATA_ACTIONS} from '../../contexts/DataContext.jsx';
 import styles from './Dropdown.module.css';
+import buttonStyles from '../buttons/Button.module.css';
 
 function RecoverPostsDropdown({onRestore}) {
     const [isOpen, setIsOpen] = useState(false);
@@ -111,21 +111,32 @@ function RecoverPostsDropdown({onRestore}) {
     const badgeClass = showCount ? styles.countBadge : '';
 
     return (
-
         <div className={styles.dropdownContainer} ref={dropdownRef}>
             <button
-                className={`${styles.dropdownToggle} ${showCount ? styles.hasItems : ''}`}
+                className={`${styles.dropdownToggle} ${showCount ? styles.hasItems : ''} ${loading ? buttonStyles.loading : ''}`}
                 onClick={handleToggle}
                 disabled={loading}
+                aria-expanded={isOpen}
+                aria-haspopup="true"
+                aria-controls="deleted-posts-menu"
+                id="deleted-posts-button"
             >
                 Verwijderde posts
+                {!loading && <span className={styles.dropdownArrow}>▼</span>}
                 {deletedPostsCount > 0 && (
-                    <span className={badgeClass}>{deletedPosts.length}</span>
+                    <span className={badgeClass} aria-label={`${deletedPostsCount} verwijderde posts`}>
+                        {deletedPostsCount}
+                    </span>
                 )}
             </button>
 
             {isOpen && (
-                <div className={styles.dropdownMenu}>
+                <div 
+                    id="deleted-posts-menu"
+                    className={styles.dropdownMenu}
+                    role="menu"
+                    aria-labelledby="deleted-posts-button"
+                >
                     <h3 className={styles.dropdownTitle}>Verwijderde posts</h3>
 
                     {deletedPosts.length === 0 ? (
@@ -133,9 +144,14 @@ function RecoverPostsDropdown({onRestore}) {
                             Geen verwijderde posts gevonden.
                         </p>
                     ) : (
-                        <ul className={styles.postsList}>
+                        <ul className={styles.postsList} role="menu">
                             {deletedPosts.map(post => (
-                                <li key={post.id} className={styles.postItem}>
+                                <li 
+                                    key={post.id} 
+                                    className={styles.postItem}
+                                    role="menuitem"
+                                    tabIndex="0"
+                                >
                                     <div className={styles.postInfo}>
                                         <h4 className={styles.postTitle}>{post.title}</h4>
                                         <p className={styles.postMeta}>
@@ -149,6 +165,7 @@ function RecoverPostsDropdown({onRestore}) {
                                         className={styles.restoreButton}
                                         onClick={() => handleRestore(post)}
                                         disabled={loading}
+                                        aria-label={`Herstel post: ${post.title}`}
                                     >
                                         Herstellen
                                     </button>
@@ -157,7 +174,6 @@ function RecoverPostsDropdown({onRestore}) {
                         </ul>
                     )}
                 </div>
-
             )}
         </div>
     );

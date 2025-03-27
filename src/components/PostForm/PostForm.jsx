@@ -1,10 +1,10 @@
-import { useActionState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import TextInputField from './TextInputField';
 import TextAreaField from './TextAreaField';
 import styles from './PostForm.module.css';
 import { calculateReadTimeinMinutes, createPost } from "../../helpers/postHelpers.js";
+import { useData } from "../../contexts/DataContext.jsx";
 
 function PostForm() {
     const navigate = useNavigate();
@@ -12,99 +12,113 @@ function PostForm() {
     const [subtitle, setSubtitle] = useState("");
     const [content, setContent] = useState("");
     const [author, setAuthor] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formResult, setFormResult] = useState(null);
 
-    const [result, submitAction, isPending] = useActionState(
-        async (previousState, formData) => {
-            // Extract form values
-            const formTitle = formData.get("title");
-            const formSubtitle = formData.get("subtitle");
-            const formContent = formData.get("content");
-            const formAuthor = formData.get("author");
+    // Gebruik DataContext om te weten of we in offline modus zijn
+    const { offlineMode, loadPosts } = useData();
 
-            // Validate input fields
-            const errors = {};
-            if (!formTitle?.trim()) errors.title = "Titel is verplicht";
-            if (!formSubtitle?.trim()) errors.subtitle = "Ondertitel is verplicht";
-            if (!formAuthor?.trim()) errors.author = "Auteur is verplicht";
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setFormResult(null);
 
-            if (!formContent?.trim()) {
-                errors.content = "Bericht is verplicht";
-            } else if (formContent.length < 30) {
-                errors.content = "Bericht moet minimaal 30 karakters bevatten";
-            } else if (formContent.length > 2000) {
-                errors.content = "Bericht mag maximaal 2000 karakters bevatten";
-            }
+        // Valideer input velden
+        const errors = {};
+        if (!title?.trim()) errors.title = "Titel is verplicht";
+        if (!subtitle?.trim()) errors.subtitle = "Ondertitel is verplicht";
+        if (!author?.trim()) errors.author = "Auteur is verplicht";
 
-            // If there are validation errors, return them
-            if (Object.keys(errors).length > 0) {
-                return { type: "error", errors };
-            }
-
-            // Calculate read time
-            const readTime = calculateReadTimeinMinutes(formContent);
-
-            // Create the complete post object
-            const completePost = {
-                title: formTitle,
-                subtitle: formSubtitle,
-                content: formContent,
-                author: formAuthor,
-                created: new Date().toISOString(),
-                readTime,
-                comments: 0,
-                shares: 0
-            };
-
-            try {
-                const newPost = await createPost(completePost)
-
-                // After successful submission, redirect to posts page
-                navigate(`/posts/${newPost.id}`);
-
-                return {
-                    type: "success",
-                    message: "Post succesvol aangemaakt!"
-                };
-            } catch (e) {
-                return {
-                    type: "error",
-                    message: "Er ging iets mis bij het opslaan van de post."
-                }
-            }
-        },
-        null // Initial state
-    );
-
-    // Keep form data in sync with the form state
-    useEffect(() => {
-        if (result?.type === "error" && !isPending) {
-            // Form was submitted but had validation errors
-            // Don't update state here as we're using controlled components
+        if (!content?.trim()) {
+            errors.content = "Bericht is verplicht";
+        } else if (content.length < 30) {
+            errors.content = "Bericht moet minimaal 30 karakters bevatten";
+        } else if (content.length > 2000) {
+            errors.content = "Bericht mag maximaal 2000 karakters bevatten";
         }
-    }, [result, isPending]);
+
+        // Als er validatiefouten zijn, geef ze weer
+        if (Object.keys(errors).length > 0) {
+            setFormResult({ type: "error", errors });
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Bereken leestijd
+        const readTime = calculateReadTimeinMinutes(content);
+
+        // Maak het volledige post object
+        const completePost = {
+            title,
+            subtitle,
+            content,
+            author,
+            created: new Date().toISOString(),
+            readTime,
+            comments: 0,
+            shares: 0
+        };
+
+        try {
+            // Gebruik de createPost functie die we hebben aangepast voor offline werking
+            const newPost = await createPost(completePost);
+
+            // Herlaad de posts in de context om de nieuwe post direct weer te geven
+            await loadPosts(true);
+
+            setFormResult({
+                type: "success",
+                message: offlineMode ?
+                    "Post succesvol lokaal opgeslagen! (Je bent offline)" :
+                    "Post succesvol aangemaakt!"
+            });
+
+            // Na succesvolle indiening, navigeer naar de detailpagina of posts overzicht
+            if (newPost && newPost.id) {
+                setTimeout(() => navigate(`/posts/${newPost.id}`), 1500);
+            } else {
+                setTimeout(() => navigate('/posts'), 1500);
+            }
+        } catch (e) {
+            console.error("Fout bij het opslaan van de post:", e);
+            setFormResult({
+                type: "error",
+                message: "Er ging iets mis bij het opslaan van de post."
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
 
     return (
         <div className={styles.formContainer}>
-            <h2>Nieuwe Blogpost</h2>
+            <h2 className={styles.formTitle}>Nieuwe Blogpost</h2>
 
-            {result?.type === "success" && (
-                <p className={styles.successMessage}>{result.message}</p>
+            {offlineMode && (
+                <div className={styles.offlineWarning}>
+                    Je bent offline. De post wordt lokaal opgeslagen en gesynchroniseerd
+                    zodra je weer online bent.
+                </div>
             )}
 
-            {result?.type === "error" && result.message && (
-                <p className={styles.errorMessage}>{result.message}</p>
+            {formResult?.type === "success" && (
+                <p className={styles.successMessage}>{formResult.message}</p>
             )}
 
-            {isPending && <p className={styles.loading}>Bezig met verzenden...</p>}
+            {formResult?.type === "error" && formResult.message && (
+                <p className={styles.errorMessage}>{formResult.message}</p>
+            )}
 
-            <form action={submitAction}>
+            {isSubmitting && <p className={styles.loading}>Bezig met verzenden...</p>}
+
+            <form onSubmit={handleSubmit}>
                 <TextInputField
                     id="title"
                     name="title"
                     label="Titel"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    error={result?.errors?.title}
+                    error={formResult?.errors?.title}
                     styles={styles}
                 />
 
@@ -114,7 +128,7 @@ function PostForm() {
                     label="Ondertitel"
                     value={subtitle}
                     onChange={(e) => setSubtitle(e.target.value)}
-                    error={result?.errors?.subtitle}
+                    error={formResult?.errors?.subtitle}
                     styles={styles}
                 />
 
@@ -124,7 +138,7 @@ function PostForm() {
                     label="Auteur"
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
-                    error={result?.errors?.author}
+                    error={formResult?.errors?.author}
                     styles={styles}
                 />
 
@@ -134,13 +148,17 @@ function PostForm() {
                     label="Bericht"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    error={result?.errors?.content}
+                    error={formResult?.errors?.content}
                     styles={styles}
                     inputProps={{ rows: 10 }}
                 />
 
-                <button type="submit" disabled={isPending}>
-                    {isPending ? 'Bezig met verzenden...' : 'Verzenden'}
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={styles.submitButton}
+                >
+                    {isSubmitting ? 'Bezig met verzenden...' : (offlineMode ? 'Lokaal opslaan' : 'Verzenden')}
                 </button>
             </form>
         </div>

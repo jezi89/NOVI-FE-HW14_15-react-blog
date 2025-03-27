@@ -1,0 +1,285 @@
+/* Gemeenschappelijke typografie stijlen */
+:root {
+  /* Typografie variabelen */
+  --text-base-size: 1rem;
+  --text-scale-ratio: 1.2;
+  
+  --text-xs: calc(var(--text-base-size) / (var(--text-scale-ratio) * var(--text-scale-ratio)));
+  --text-sm: calc(var(--text-base-size) / var(--text-scale-ratio));
+  --text-md: var(--text-base-size);
+  --text-lg: calc(var(--text-base-size) * var(--text-scale-ratio));
+  --text-xl: calc(var(--text-base-size) * var(--text-scale-ratio) * var(--text-scale-ratio));
+  --text-xxl: calc(var(--text-base-size) * var(--text-scale-ratio) * var(--text-scale-ratio) * var(--text-scale-ratio));
+  --text-xxxl: calc(var(--text-base-size) * var(--text-scale-ratio) * var(--text-scale-ratio) * var(--text-scale-ratio) * var(--text-scale-ratio));
+  
+  --heading-line-height: 1.2;
+  --body-line-height: 1.5;
+  
+  /* Tekstkleuren */
+  --text-primary: var(--color-primary);
+  --text-secondary: var(--color-secondary-dark);
+  --text-tertiary: var(--color-tertiary);
+  --text-muted: var(--color-text-muted);
+  --text-inverted: var(--color-neutral-light);
+}
+
+/* Typografiestijlen */
+.text-xs {
+  font-size: var(--text-xs);
+}
+
+.text-sm {
+  font-size: var(--text-sm);
+}
+
+.text-base {
+  font-size: var(--text-md);
+}
+
+.text-lg {
+  font-size: var(--text-lg);
+}
+
+.text-xl {
+  font-size: var(--text-xl);
+}
+
+.text-2xl {
+  font-size: var(--text-xxl);
+}
+
+.text-3xl {
+  font-size: var(--text-xxxl);
+}
+
+/* Font families */
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.font-accent {
+  font-family: var(--font-accent);
+}
+
+/* Font weights */
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-extrabold {
+  font-weight: 800;
+}
+
+/* Text alignment */
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+/* Text transforms */
+.uppercase {
+  text-transform: uppercase;
+}
+
+.lowercase {
+  text-transform: lowercase;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.normal-case {
+  text-transform: none;
+}
+
+/* Text decorations */
+.underline {
+  text-decoration: underline;
+}
+
+.line-through {
+  text-decoration: line-through;
+}
+
+.no-underline {
+  text-decoration: none;
+}
+
+/* Letter spacing */
+.tracking-tight {
+  letter-spacing: -0.01em;
+}
+
+.tracking-normal {
+  letter-spacing: 0;
+}
+
+.tracking-wide {
+  letter-spacing: 0.025em;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+
+.tracking-widest {
+  letter-spacing: 0.1em;
+}
+
+/* Line heights */
+.leading-none {
+  line-height: 1;
+}
+
+.leading-tight {
+  line-height: var(--heading-line-height);
+}
+
+.leading-normal {
+  line-height: var(--body-line-height);
+}
+
+.leading-loose {
+  line-height: 1.8;
+}
+
+/* Paragraph styles */
+.paragraph {
+  margin-bottom: 1rem;
+}
+
+.paragraph-sm {
+  font-size: var(--text-sm);
+  margin-bottom: 0.75rem;
+}
+
+.paragraph-lg {
+  font-size: var(--text-lg);
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
+}
+
+/* Text colors */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-inverted {
+  color: var(--text-inverted);
+}
+
+/* Andere typografie utilities */
+.italic {
+  font-style: italic;
+}
+
+.not-italic {
+  font-style: normal;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.break-words {
+  word-wrap: break-word;
+}
+
+.break-all {
+  word-break: break-all;
+}
+
+/* Quotes en blockquotes */
+.blockquote {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  padding-left: 1.5rem;
+  border-left: 3px solid var(--color-secondary);
+  margin: 1.5rem 0;
+  color: var(--text-primary);
+}
+
+/* Links */
+.link {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: var(--color-link-hover);
+}
+
+.link-underline {
+  text-decoration: underline;
+}
+
+.link-underline:hover {
+  text-decoration: none;
+}
+
+/* Responsiviteit */
+@media (max-width: 768px) {
+  :root {
+    --text-base-size: 0.938rem; /* Iets kleinere basisfontgrootte op kleinere schermen */
+  }
+  
+  .blockquote {
+    padding-left: 1rem;
+    font-size: var(--text-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .text-2xl, .text-3xl {
+    font-size: var(--text-xl); /* Kleinere headings op mobiel */
+  }
+}

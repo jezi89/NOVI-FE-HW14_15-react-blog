@@ -1,197 +1,90 @@
-/* PostForm Styling */
+/* Component-specifieke stijlen */
 .formContainer {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2.5rem;
-    background-color: var(--color-background);
-    border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-
-}
-
-.formContainer h2 {
-    font-family: var(--font-heading);
-    color: var(--color-heading);
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 2rem;
-    position: relative;
-    padding-bottom: 0.5rem;
-}
-
-.formContainer h2:after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70px;
-    height: 3px;
-    background-color: var(--color-secondary);
+  composes: form-container from '../../styles/forms.css';
+  max-width: 900px;
 }
 
 .formField {
-    margin-bottom: 1.8rem;
+  composes: form-field from '../../styles/forms.css';
 }
 
-.formField label {
-    display: block;
-    margin-bottom: 0.6rem;
-    font-weight: 600;
-    color: var(--color-primary-medium);
-    font-family: var(--font-accent);
-    letter-spacing: 0.02em;
+.formLabel {
+  composes: form-label from '../../styles/forms.css';
 }
 
-.formField input,
-.formField textarea {
-    width: 100%;
-    padding: 0.9rem;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    background-color: var(--color-neutral-light);
-    color: var(--color-text);
-    transition: border-color 0.3s, box-shadow 0.3s;
-    font-family: var(--font-body);
-    font-size: 1rem;
+.formTitle {
+  composes: form-title from '../../styles/forms.css';
 }
 
-.formField input:focus,
-.formField textarea:focus {
-    outline: none;
-    border-color: var(--color-tertiary);
-    box-shadow: 0 0 0 3px rgba(90, 145, 120, 0.25);
+.formInput {
+  composes: form-input from '../../styles/forms.css';
 }
 
-.formField textarea {
-    resize: vertical;
-    min-height: 180px;
-    line-height: 1.6;
-}
-
-.formContainer button {
-    background-color: var(--color-tertiary);
-    color: var(--color-neutral-light);
-    border: none;
-    border-radius: 4px;
-    padding: 0.9rem 2rem;
-    font-size: 1rem;
-    font-weight: 600;
-    font-family: var(--font-accent);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: block;
-    margin: 2rem auto 0;
-    min-width: 180px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.formContainer button:hover {
-    background-color: var(--color-primary-medium);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-.formContainer button:disabled {
-    background-color: var(--color-primary-light);
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+.formTextarea {
+  composes: form-textarea from '../../styles/forms.css';
 }
 
 .error {
-    color: #d9534f;
-    font-size: 0.9rem;
-    margin-top: 0.4rem;
-    display: block;
-    font-family: var(--font-accent);
-    font-weight: 500;
+  composes: form-error from '../../styles/forms.css';
 }
 
 .errorMessage {
-    color: #d9534f;
-    font-size: 0.9rem;
-    margin-top: 0.4rem;
-    display: block;
-    font-family: var(--font-accent);
-    font-weight: 500;
-}
-
-.inputError {
-    border-color: #d9534f !important;
-    background-color: rgba(217, 83, 79, 0.05) !important;
+  composes: form-message form-message-error from '../../styles/forms.css';
 }
 
 .successMessage {
-    background-color: rgba(76, 175, 80, 0.1);
-    color: #4caf50;
-    padding: 1rem;
-    border-radius: 4px;
-    text-align: center;
-    margin-bottom: 1.5rem;
-    border-left: 4px solid #4caf50;
-    font-family: var(--font-accent);
-    font-weight: 500;
+  composes: form-message form-message-success from '../../styles/forms.css';
+}
+
+.inputError {
+  composes: form-input-error from '../../styles/forms.css';
 }
 
 .loading {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    color: var(--color-tertiary);
-    font-style: italic;
-    font-family: var(--font-body);
+  composes: form-loading from '../../styles/forms.css';
 }
 
-/* Form field feedback */
-.hasError input,
-.hasError textarea {
-    border-color: #d9534f;
-    background-color: rgba(217, 83, 79, 0.05);
+.submitButton {
+  composes: button-base button-tertiary from '../../styles/buttons.css';
+  display: block;
+  margin: 2rem auto 0;
+  min-width: 180px;
 }
 
-.hasSuccess input,
-.hasSuccess textarea {
-    border-color: #4caf50;
-    background-color: rgba(76, 175, 80, 0.05);
+.requiredMark {
+  color: var(--form-error-color);
+  margin-left: 0.25rem;
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
-    .formContainer {
-        padding: 2rem 1.5rem;
-        margin: 1.5rem auto;
-
-    }
-    
-    .formContainer h2 {
-        font-size: 1.8rem;
-    }
-    
-    .formContainer h2:after {
-        width: 60px;
-    }
+.formHint {
+  composes: form-hint from '../../styles/forms.css';
 }
 
-@media (max-width: 480px) {
-    .formContainer {
-        padding: 1.5rem 1rem;
-        margin: 1rem;
-    }
-    
-    .formContainer button {
-        width: 100%;
-        padding: 0.8rem 1.5rem;
-    }
-    
-    .formField label {
-        margin-bottom: 0.4rem;
-    }
-    
-    .formField input,
-    .formField textarea {
-        padding: 0.8rem;
-    }
+.hasError {
+  /* Extra stijlen voor velden met fouten */
+}
+
+/* Component-specifieke stijlen */
+.offlineWarning {
+  background-color: #dc3545;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-family: var(--font-accent);
+  font-weight: 500;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
 }

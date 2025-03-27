@@ -1,12 +1,14 @@
-// src/components/PageLayout.jsx
+// src/components/pageLayOut/PageLayout.jsx
 import React from 'react';
 import styles from './PageLayout.module.css';
 
-function PageLayout({ children, className }) {
+function PageLayout({ children, className, fullHeight = false }) {
     return (
-        <div className={`${styles.pageLayout} ${className || ''}`}>
-            {children}
-        </div>
+        <main className={`${styles.pageLayout} ${fullHeight ? styles.fullHeight : ''} ${className || ''}`}>
+            <div className={styles.innerContainer}>
+                {children}
+            </div>
+        </main>
     );
 }
 

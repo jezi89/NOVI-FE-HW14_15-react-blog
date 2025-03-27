@@ -1,6 +1,13 @@
 /* Google Fonts import */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap');
 
+/* Thema en gedeelde stijlen importeren */
+@import './buttons.css';
+@import './forms.css';
+@import './layout.css';
+@import './typography.css';
+@import './dropdowns.css';
+
 :root {
   /* Main colors - aangepast voor beter contrast */
   --color-primary: #0f2e28; /* Deepened forest green for better contrast */
@@ -40,11 +47,19 @@
   --color-link: var(--color-secondary-dark);
   --color-link-hover: var(--color-secondary);
   --color-border: var(--color-tertiary);
+  --color-text-muted: #6c757d;
+
+  /* RGB variabelen voor gebruik in rgba() functies */
+  --color-primary-rgb: 15, 46, 40;
+  --color-secondary-rgb: 224, 158, 84;
+  --color-tertiary-rgb: 90, 145, 120;
+  --color-border-rgb: 90, 145, 120;
+  --color-link-rgb: 183, 125, 58;
 
   /* System variables */
   --navbar-height: 60px;
   --content-padding: 1.5rem;
-  --container-margin-top: calc(var(--navbar-height) + 1.5rem);
+  --container-padding-top: calc(var(--navbar-height) + 1.5rem);
 
   /* Font families */
   --font-heading: 'Playfair Display', serif;
@@ -52,17 +67,22 @@
   --font-accent: 'Montserrat', sans-serif;
 }
 
+/* Reset en basis stijlen */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  min-height: 100%;
+  height: 100%;
+}
+
 html, body {
   overflow-x: hidden; /* Voorkomt horizontale scrollbars op de hele pagina */
   width: 100%; /* Beperkt de breedte tot de viewport */
 }
-
 
 body {
   font-family: var(--font-body);
@@ -75,81 +95,23 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
   background-color: var(--color-background);
+  min-height: 100vh;
+  height: 100%;
 }
 
-button, input, select, textarea {
-  font-family: var(--font-body);
+#root {
+  min-height: 100vh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  color: var(--color-heading);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+/* Zorg ervoor dat de homepage achtergrond altijd het volledige scherm vult */
+.homepage-container {
+  flex-grow: 1;
 }
 
-/* Heading stijlen met effecten */
-h1 {
-  font-size: 3.2em;
-  margin-block: 0.5em;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  position: relative;
-}
-
-/* Underline effect voor h1 */
-h1:after {
-  content: '';
-  position: absolute;
-  bottom: -0.15em;
-  left: 0;
-  width: 2em;
-  height: 3px;
-  background-color: var(--color-secondary);
-}
-
-h2 {
-  font-size: 2.4em;
-  margin-block: 0.6em;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.08);
-}
-
-h3 {
-  font-size: 1.8em;
-  margin-block: 0.7em;
-}
-
-h4 {
-  font-size: 1.5em;
-  margin-block: 1em;
-}
-
-p {
-  margin-block: 0.5em;
-}
-
-/* Accent text class */
-.accent-text {
-  font-family: var(--font-accent);
-  font-weight: 600;
-}
-
-
-
-/* Container consistent styling */
-
-.page-container, 
-.content-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-right: var(--content-padding);
-  padding-left: var(--content-padding);
-  padding-bottom: 2rem;
-
-}
-
-/* Link styling */
+/* Globale elementstijlen */
 a {
   color: var(--color-link);
   text-decoration: none;
@@ -160,15 +122,44 @@ a:hover {
   color: var(--color-link-hover);
 }
 
-/* Button styling */
-button, 
-.button {
-  font-family: var(--font-accent);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+a:focus {
+  outline: 2px solid var(--color-tertiary);
+  outline-offset: 2px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input, select, textarea, button {
+  font: inherit;
+}
+
+/* Contrast en toegankelijkheid helpers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.focus-visible:focus {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 2px;
 }
 
 /* Dark background variant */
@@ -188,7 +179,45 @@ button,
   background-color: var(--color-horizon);
 }
 
-/* Shadow effects */
-.shadow-box {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+/* Utilities voor algemeen gebruik */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

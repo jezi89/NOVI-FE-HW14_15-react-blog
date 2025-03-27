@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import styles from './Button.module.css';
 
-function ClearLocalStorageButton({ onClear }) {
+function ClearLocalStorageButton({ onClear, disabled }) {
     const [isConfirming, setIsConfirming] = useState(false);
 
     const handleClick = () => {
+        if (disabled) return;
+        
         if (!isConfirming) {
             setIsConfirming(true);
             return;
@@ -26,8 +28,9 @@ function ClearLocalStorageButton({ onClear }) {
     return (
         <button
             onClick={handleClick}
-            className={`${styles.clearStorageButton} ${isConfirming ? styles.deleteConfirm : ''}`}
+            className={`${styles.clearStorageButton} ${isConfirming ? styles.deleteConfirm : ''} ${disabled ? styles.disabled : ''}`}
             title={isConfirming ? "Klik nogmaals om te bevestigen" : "Wis lokale opslag"}
+            disabled={disabled}
         >
             {isConfirming ? (
                 <>
@@ -47,6 +50,7 @@ function ClearLocalStorageButton({ onClear }) {
                     Wis lokale data
                 </>
             )}
+            {disabled && <span className={styles.disabledOverlay}></span>}
         </button>
     );
 }

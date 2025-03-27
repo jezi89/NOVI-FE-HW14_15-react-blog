@@ -31,12 +31,41 @@
     background-color: var(--color-secondary);
 }
 
+/* Offline indicator styling */
+.offlineIndicator {
+    display: inline-block;
+    background-color: #dc3545;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-left: 0.8rem;
+    font-family: var(--font-accent);
+    font-weight: 500;
+    vertical-align: middle;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 /* Stats voor posts en verwijderde posts */
 .postStats {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     align-items: center;
     margin: 0.75rem 0;
+    justify-content: space-between;
 }
 
 .deletedPostsCounter {
@@ -79,6 +108,82 @@
     margin: 1rem 0;
     font-family: var(--font-accent);
     font-weight: 500;
+}
+
+.loadingMessage {
+    background-color: rgba(64, 137, 226, 0.1);
+    color: #4089e2;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    font-family: var(--font-accent);
+    font-weight: 500;
+    text-align: center;
+}
+
+.syncError {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    margin: 0.5rem 0;
+    font-family: var(--font-accent);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.syncMessage {
+    background-color: rgba(64, 137, 226, 0.1);
+    color: #4089e2;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    margin: 0.5rem 0;
+    font-family: var(--font-accent);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Connection Controls */
+.connectionControls {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.refreshButton {
+    background-color: #4089e2 !important;
+    color: white !important;
+    padding: 0.35rem 0.8rem !important;
+    font-size: 0.85rem !important;
+    border-radius: 4px !important;
+}
+
+.refreshButton:hover {
+    background-color: #3278d8 !important;
+}
+
+.reconnectButton {
+    background-color: #dc3545 !important;
+    color: white !important;
+    padding: 0.35rem 0.8rem !important;
+    font-size: 0.85rem !important;
+    border-radius: 4px !important;
+}
+
+.reconnectButton:hover {
+    background-color: #c82333 !important;
+}
+
+.onlineButton {
+    background-color: #28a745 !important;
+    color: white !important;
+    padding: 0.35rem 0.8rem !important;
+    font-size: 0.85rem !important;
+    border-radius: 4px !important;
+}
+
+.onlineButton:hover {
+    background-color: #218838 !important;
 }
 
 .postsList {
@@ -256,6 +361,13 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
+    }
+    
+    .connectionControls {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        width: 100%;
+        justify-content: space-between;
     }
 }
 

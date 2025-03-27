@@ -1,61 +1,99 @@
 import {Link, useParams} from "react-router-dom";
 import formatDate from "../../helpers/formatDate.js";
-import {calcReadTime, getPostById} from "../../helpers/postHelpers.js";
+import {calcReadTime} from "../../helpers/postHelpers.js";
 import PageLayout from '../../components/pageLayOut/PageLayout.jsx';
 import './SinglePost.css';
 import {useEffect, useState} from "react";
+import {useData} from "../../contexts/DataContext.jsx";
+import {fetchPostById} from "../../services/postsFetchService.js";
 
 function SinglePost() {
     const {id} = useParams();
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    
+    // Gebruik de context om toegang te krijgen tot alle posts en status
+    const {
+        posts,
+        offlineMode,
+        usingBackup,
+        backupTimestamp
+    } = useData();
 
     useEffect(() => {
         async function loadPost() {
+            setLoading(true);
+            setError(null);
+            
             try {
-                setLoading(true);
-                const postData = await getPostById(id);
-                setPost(postData);
-
+                // Probeer eerst de post te vinden in de context (local-first approach)
+                const localPost = posts.find(p => p.id == id); // == want id kan string zijn van URL param
+                
+                if (localPost) {
+                    console.log("Post gevonden in context:", localPost);
+                    setPost(localPost);
+                    setLoading(false);
+                    return;
+                }
+                
+                // Als we offline zijn of een backup gebruiken en de post niet in de context staat
+                if (offlineMode || usingBackup) {
+                    throw new Error("Post niet gevonden in lokale data");
+                }
+                
+                // Als de post niet in de context staat en we zijn online, probeer deze van de server te halen
+                console.log("Post niet gevonden in context, ophalen van server...");
+                const postData = await fetchPostById(id);
+                
+                if (postData) {
+                    setPost(postData);
+                } else {
+                    throw new Error("Post niet gevonden op de server");
+                }
             } catch (e) {
-                console.error("Post kan niet worden geladen", e)
-                setError("Failed to load the post");
-
+                console.error("Post kan niet worden geladen:", e);
+                setError(e.message || "Post kon niet worden geladen");
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
         }
 
-        loadPost().catch(e =>  console.error("Unhandled error in loadPost:", e));
-    }, [id]);
+        loadPost().catch(e => console.error("Onbehandelde fout in loadPost:", e));
+    }, [id, posts, offlineMode, usingBackup]);
 
     if (loading) {
         return (
             <PageLayout>
-                <div className="post-conatiner">
-                    <p>Loading post</p>
+                <div className="post-container">
+                    <div className="loading-indicator">
+                        <span className="loading-spinner"></span>
+                        <p>Post laden...</p>
+                    </div>
                 </div>
             </PageLayout>
-        )
+        );
     }
-
 
     if (error || !post) {
         return (
             <PageLayout>
-            <div className="post-container">
-                <div className="post-not-found">
-                    <h2>Post niet gevonden</h2>
-                    <p>De opgevraagde blogpost kon niet worden gevonden.</p>
-                    <Link to="/posts" className="back-link">
-                        <span>←</span> Ga terug naar de overzichtspagina
-                    </Link>
+                <div className="post-container">
+                    <div className="post-not-found">
+                        <h2>Post niet gevonden</h2>
+                        <p>De opgevraagde blogpost kon niet worden gevonden.</p>
+                        {offlineMode && (
+                            <p className="offline-warning">
+                                Je bent momenteel offline. Controleer je internetverbinding of ga terug naar de overzichtspagina.
+                            </p>
+                        )}
+                        <Link to="/posts" className="back-link">
+                            <span>←</span> Ga terug naar de overzichtspagina
+                        </Link>
+                    </div>
                 </div>
-            </div>
             </PageLayout>
-
-        )
+        );
     }
 
     const {title, subtitle, content, author, created, comments, shares} = post;
@@ -72,6 +110,18 @@ function SinglePost() {
     return (
         <PageLayout>
             <div className="post-container">
+                {offlineMode && (
+                    <div className="offline-badge">
+                        Offline modus - Lokale versie wordt weergegeven
+                    </div>
+                )}
+                
+                {usingBackup && backupTimestamp && (
+                    <div className="backup-badge">
+                        Backup versie van {new Date(backupTimestamp).toLocaleString()}
+                    </div>
+                )}
+                
                 <article>
                     <div className="post-header">
                         <h1 className="post-title">{title}</h1>
@@ -106,7 +156,7 @@ function SinglePost() {
                     </div>
 
                     <div className="post-content">
-                        <p>{firstParagraph}</p>
+                        <p className="first-paragraph">{firstParagraph}</p>
 
                         {/* Google Maps placeholder */}
                         <div className="map-container">
@@ -117,7 +167,9 @@ function SinglePost() {
                             </div>
                         </div>
 
-                        <p>{restContent}</p>
+                        {restContent.split('\n\n').map((paragraph, index) => (
+                            <p key={index}>{paragraph}</p>
+                        ))}
                     </div>
 
                     <div className="post-stats">
@@ -132,10 +184,10 @@ function SinglePost() {
                         </div>
 
                         <div className="post-actions">
-                            <button className="post-action-btn">
+                            <button className="post-action-btn" disabled={offlineMode}>
                                 <span>👍</span> Like
                             </button>
-                            <button className="post-action-btn">
+                            <button className="post-action-btn" disabled={offlineMode}>
                                 <span>📢</span> Deel
                             </button>
                         </div>
@@ -150,10 +202,25 @@ function SinglePost() {
                 <section className="related-posts">
                     <h3>Gerelateerde artikelen</h3>
                     <div className="related-posts-grid">
-                        {/* Placeholder voor gerelateerde posts */}
-                        <div className="related-post-placeholder">
-                            <p>Hier zouden gerelateerde artikelen verschijnen</p>
-                        </div>
+                        {posts.length > 1 ? (
+                            // Toon maximaal 3 willekeurige posts (behalve de huidige)
+                            posts
+                                .filter(p => p.id != id) // != want id kan string zijn
+                                .sort(() => 0.5 - Math.random()) // Willekeurige sortering
+                                .slice(0, 3)
+                                .map(relatedPost => (
+                                    <div key={relatedPost.id} className="related-post">
+                                        <Link to={`/posts/${relatedPost.id}`}>
+                                            <h4>{relatedPost.title}</h4>
+                                            <p>{relatedPost.subtitle}</p>
+                                        </Link>
+                                    </div>
+                                ))
+                        ) : (
+                            <div className="related-post-placeholder">
+                                <p>Geen gerelateerde artikelen beschikbaar</p>
+                            </div>
+                        )}
                     </div>
                 </section>
             </div>

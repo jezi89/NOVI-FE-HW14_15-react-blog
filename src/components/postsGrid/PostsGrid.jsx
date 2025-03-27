@@ -11,6 +11,7 @@ import DeleteButton from "../buttons/DeleteButton.jsx";
 import {removePost} from "../../helpers/postHelpers.js";
 import RecoverPostsDropdown from "../dropdowns/RecoverPostsDropdown.jsx";
 import {useData, DATA_ACTIONS} from "../../contexts/DataContext.jsx";
+import ReadSpeedSelector from "../ReadSpeedSelector.jsx";
 
 function PostsGrid() {
     // Dummy tags voor placeholders
@@ -31,11 +32,16 @@ function PostsGrid() {
         backupTimestamp,
         lastBackupCreated,
         deletedPostsCount,
-        dispatch
+        offlineMode,
+        syncStatus,
+        dispatch,
+        loadPosts,
+        checkServerConnection
     } = useData();
 
     const {readSpeed} = useReadSpeed();
     const [hoveredPostId, setHoveredPostId] = useState(null);
+    const [isCheckingConnection, setIsCheckingConnection] = useState(false);
 
     // Effect om het aantal verwijderde posts bij te werken wanneer dit component mount
     useEffect(() => {
@@ -98,14 +104,47 @@ function PostsGrid() {
         dispatch({type: DATA_ACTIONS.CREATE_BACKUP});
     };
 
+    const handleRefresh = async () => {
+        await loadPosts(true);
+    };
+
+    const handleCheckConnection = async () => {
+        setIsCheckingConnection(true);
+
+        try {
+            const isAvailable = await checkServerConnection();
+
+            if (isAvailable && offlineMode) {
+                // Als de server nu beschikbaar is maar we waren in offline modus
+                dispatch({type: DATA_ACTIONS.SET_OFFLINE_MODE, payload: false});
+                await loadPosts(true);
+            } else if (isAvailable) {
+                // Als de server al beschikbaar was
+                await loadPosts(true);
+            } else {
+                // Server is nog steeds niet beschikbaar
+                dispatch({type: DATA_ACTIONS.SET_OFFLINE_MODE, payload: true});
+            }
+        } catch (e) {
+            console.error("Fout bij het controleren van de verbinding:", e);
+        } finally {
+            setIsCheckingConnection(false);
+        }
+    };
+
     // Render states
-    if (loading) return <p>Posts laden...</p>;
-    if (error) return <p className={styles.errorMessage}>{error}</p>;
+    if (loading) return <p className={styles.loadingMessage}>Posts laden...</p>;
 
     return (
         <div>
             <div className={styles.postsHeader}>
-                <h2>Alle Posts {usingBackup && "(uit backup)"}</h2>
+                <h2>
+                    Alle Posts
+                    {usingBackup && " (uit backup)"}
+                    {offlineMode && (
+                        <span className={styles.offlineIndicator}> (Offline Modus)</span>
+                    )}
+                </h2>
                 <div className={styles.postStats}>
                     <p>Totaal aantal posts: {posts.length}</p>
                     {deletedPostsCount > 0 && (
@@ -113,10 +152,41 @@ function PostsGrid() {
                             Verwijderde posts: {deletedPostsCount}
                         </p>
                     )}
+                    <div className={styles.connectionControls}>
+                        <button
+                            className={`${buttonStyles.actionButton} ${styles.refreshButton}`}
+                            onClick={handleRefresh}
+                            disabled={loading || isCheckingConnection}
+                        >
+                            {loading ? "Bezig..." : "Vernieuwen"}
+                        </button>
+                        <button
+                            className={`${buttonStyles.actionButton} ${offlineMode ? styles.reconnectButton : styles.onlineButton}`}
+                            onClick={handleCheckConnection}
+                            disabled={isCheckingConnection}
+                        >
+                            {isCheckingConnection
+                                ? "Controleren..."
+                                : offlineMode
+                                    ? "Verbinding controleren"
+                                    : "Online"
+                            }
+                        </button>
+                    </div>
                 </div>
                 {backupTimestamp && (
                     <p className={styles.backupInfo}>
                         Backup van: {new Date(backupTimestamp).toLocaleString()}
+                    </p>
+                )}
+                {syncStatus === 'failed' && (
+                    <p className={styles.syncError}>
+                        Laatste synchronisatie met server mislukt. Wijzigingen zijn wel lokaal opgeslagen.
+                    </p>
+                )}
+                {syncStatus === 'syncing' && (
+                    <p className={styles.syncMessage}>
+                        Bezig met synchroniseren...
                     </p>
                 )}
             </div>
@@ -137,7 +207,7 @@ function PostsGrid() {
                     Instellingen
                 </Link>
             </div>
-
+            <ReadSpeedSelector/>
             {/* Lijst met posts */}
             <ul className={styles.postsList}>
                 {Array.isArray(posts) && posts.length > 0 ? (
@@ -179,9 +249,7 @@ function PostsGrid() {
                     <p>Geen posts gevonden</p>
                 )}
             </ul>
-            <p>test</p>
-        </ div>
-
+        </div>
     );
 }
 

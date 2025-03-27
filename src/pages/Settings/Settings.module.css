@@ -10,14 +10,53 @@
     font-size: 2rem;
 }
 
-.offlineBanner {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+.offlineWarning {
+    background-color: #dc3545;
+    color: white;
     border-radius: 4px;
     padding: 12px 16px;
     margin-bottom: 20px;
     font-weight: 500;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.warningText {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 8px;
+}
+
+.connectionButton {
+    background-color: #4089e2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.connectionButton:hover {
+    background-color: #3278d8;
+}
+
+.connectionButton.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .settingsSection {
@@ -67,7 +106,17 @@
 .settingsActions {
     margin: 20px 0;
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
+}
+
+.secondaryButton {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+.secondaryButton:hover {
+    background-color: #5a6268 !important;
 }
 
 .settingsInfo {
@@ -92,4 +141,15 @@
 .settingsInfo li {
     margin-bottom: 8px;
     color: #6c757d;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .settingsActions {
+        flex-direction: column;
+    }
+    
+    .settingsActions button {
+        width: 100%;
+    }
 }

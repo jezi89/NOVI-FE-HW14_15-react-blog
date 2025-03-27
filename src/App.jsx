@@ -12,7 +12,7 @@ import { DataProvider } from "./contexts/DataContext.jsx";
 function App() {
     return (
         <DataProvider>
-            <NavBar/>
+            <NavBar />
             <Routes>
                 <Route path="/posts/:id" element={<SinglePost/>}>
                 </Route>

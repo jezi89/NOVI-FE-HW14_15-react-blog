@@ -1,0 +1,236 @@
+/* Gemeenschappelijke button stijlen */
+:root {
+  /* Button-specifieke variabelen */
+  --button-padding-small: 0.4rem 0.8rem;
+  --button-padding-medium: 0.6rem 1rem;
+  --button-padding-large: 0.75rem 1.5rem;
+  
+  --button-border-radius: 4px;
+  --button-font-size-small: 0.75rem;
+  --button-font-size-medium: 0.85rem;
+  --button-font-size-large: 1rem;
+  
+  --button-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  --button-shadow-hover: 0 4px 10px rgba(0, 0, 0, 0.15);
+  --button-shadow-active: 0 1px 4px rgba(0, 0, 0, 0.1);
+  
+  --button-transition: all 0.3s ease;
+  
+  /* Button kleuren */
+  --button-primary-bg: var(--color-primary);
+  --button-primary-text: white;
+  --button-primary-hover-bg: var(--color-primary-medium);
+  
+  --button-secondary-bg: var(--color-secondary);
+  --button-secondary-text: var(--color-primary-dark);
+  --button-secondary-hover-bg: var(--color-secondary-dark);
+  
+  --button-tertiary-bg: var(--color-tertiary);
+  --button-tertiary-text: white;
+  --button-tertiary-hover-bg: #4e8067; /* Donkerdere variant van tertiary */
+  
+  --button-danger-bg: #dc3545;
+  --button-danger-text: white;
+  --button-danger-hover-bg: #c82333;
+  
+  --button-neutral-bg: #6c757d;
+  --button-neutral-text: white;
+  --button-neutral-hover-bg: #5a6268;
+  
+  --button-success-bg: #28a745;
+  --button-success-text: white;
+  --button-success-hover-bg: #218838;
+}
+
+/* Basis button stijl */
+.button-base {
+  display: inline-block;
+  padding: var(--button-padding-medium);
+  border: none;
+  border-radius: var(--button-border-radius);
+  font-family: var(--font-accent);
+  font-size: var(--button-font-size-medium);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: var(--button-transition);
+  box-shadow: var(--button-shadow);
+  text-align: center;
+}
+
+.button-base:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--button-shadow-hover);
+}
+
+.button-base:active {
+  transform: translateY(1px);
+  box-shadow: var(--button-shadow-active);
+}
+
+/* Focus states voor toegankelijkheid */
+.button-base:focus {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+.button-base:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Disabled state */
+.button-base:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--button-shadow);
+}
+
+/* Button varianten */
+.button-primary {
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+}
+
+.button-primary:hover:not(:disabled) {
+  background-color: var(--button-primary-hover-bg);
+}
+
+.button-secondary {
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+}
+
+.button-secondary:hover:not(:disabled) {
+  background-color: var(--button-secondary-hover-bg);
+}
+
+.button-tertiary {
+  background-color: var(--button-tertiary-bg);
+  color: var(--button-tertiary-text);
+}
+
+.button-tertiary:hover:not(:disabled) {
+  background-color: var(--button-tertiary-hover-bg);
+}
+
+.button-danger {
+  background-color: var(--button-danger-bg);
+  color: var(--button-danger-text);
+}
+
+.button-danger:hover:not(:disabled) {
+  background-color: var(--button-danger-hover-bg);
+}
+
+.button-neutral {
+  background-color: var(--button-neutral-bg);
+  color: var(--button-neutral-text);
+}
+
+.button-neutral:hover:not(:disabled) {
+  background-color: var(--button-neutral-hover-bg);
+}
+
+.button-success {
+  background-color: var(--button-success-bg);
+  color: var(--button-success-text);
+}
+
+.button-success:hover:not(:disabled) {
+  background-color: var(--button-success-hover-bg);
+}
+
+/* Button grootten */
+.button-small {
+  padding: var(--button-padding-small);
+  font-size: var(--button-font-size-small);
+}
+
+.button-large {
+  padding: var(--button-padding-large);
+  font-size: var(--button-font-size-large);
+}
+
+/* Button met icoon */
+.button-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Button uitlijning */
+.button-full-width {
+  width: 100%;
+}
+
+/* Button groepen voor meerdere knoppen in een rij */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  align-items: center;
+}
+
+.button-group-right {
+  justify-content: flex-end;
+}
+
+.button-group-center {
+  justify-content: center;
+}
+
+.button-group-space-between {
+  justify-content: space-between;
+}
+
+/* Button in rechter hoek */
+.button-right {
+  margin-left: auto;
+}
+
+/* Loading state */
+.button-loading {
+  position: relative;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.button-loading:hover {
+  transform: none;
+}
+
+.button-loading::after {
+  content: "";
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  top: calc(50% - 0.5rem);
+  right: 0.75rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsieve aanpassingen */
+@media (max-width: 480px) {
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-base {
+    width: 100%;
+    text-align: center;
+  }
+
+  .button-right {
+    margin-left: 0;
+  }
+}

@@ -1,4 +1,3 @@
-import ReadSpeedSelector from "../../components/ReadSpeedSelector.jsx";
 import styles from "../../components/postsGrid/PostsGrid.module.css";
 import PageLayout from '../../components/pageLayOut/PageLayout.jsx';
 import PostsGrid from "../../components/postsGrid/PostsGrid.jsx";
@@ -20,9 +19,9 @@ export function Posts() {
         <PageLayout className={styles.postsPage}>
 
             <PostsGrid/>
-            <ReadSpeedSelector/>
-
         </PageLayout>
     );
 }
+
 /* If the .postItem class is in another CSS module */
+

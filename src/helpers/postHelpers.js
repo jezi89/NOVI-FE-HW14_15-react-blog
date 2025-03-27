@@ -1,18 +1,24 @@
 import readingSpeeds from '../constants/readingSpeeds.js';
-import {getLatestBackup, isBackupInitialized, removeDeletedPost, saveInitialBackup, getDeletedPosts} from '../services/backupService.js';
+import {getLatestBackup, isBackupInitialized, removeDeletedPost, saveInitialBackup, getDeletedPosts, createManualBackup} from '../services/backupService.js';
 import {addPost, fetchPostById, fetchPosts} from '../services/postsFetchService.js';
-import { deletePost } from '../services/postsFetchService.js';
-import { saveDeletedPost } from '../services/backupService.js';
+import {deletePost} from '../services/postsFetchService.js';
+import {saveDeletedPost} from '../services/backupService.js';
+
+// Genereer een uniek ID voor lokale posts
+// Deze functie genereert een negatief ID om conflicten met server IDs te voorkomen
+const generateLocalId = () => {
+    return -Math.floor(Math.random() * 10000) - 1; // Negatieve ID tussen -1 en -10000
+};
 
 export async function getPosts(options = {}) {
     try {
         const posts = await fetchPosts(options);
-        
+
         // Maak een initiële backup van de posts als deze nog niet is gemaakt
         if (posts && !isBackupInitialized()) {
             saveInitialBackup(posts)
         }
-        
+
         // NIEUWE CODE: Filter verwijderde posts uit de response
         // Haal de lijst van verwijderde posts op
         const deletedPosts = getDeletedPosts();
@@ -20,7 +26,7 @@ export async function getPosts(options = {}) {
         const deletedPostIds = new Set(deletedPosts.map(post => post.id));
         // Filter de posts die in de lijst van verwijderde posts zitten
         const filteredPosts = posts.filter(post => !deletedPostIds.has(post.id));
-        
+
         return filteredPosts;
     } catch (e) {
         console.error("Kon posts niet ophalen:", e);
@@ -28,12 +34,12 @@ export async function getPosts(options = {}) {
         const backup = getLatestBackup();
         if (backup && backup.data) {
             console.log("Gebruik backup data als fallback");
-            
+
             // NIEUWE CODE: Filter ook hier verwijderde posts
             const deletedPosts = getDeletedPosts();
             const deletedPostIds = new Set(deletedPosts.map(post => post.id));
             const filteredBackupPosts = backup.data.filter(post => !deletedPostIds.has(post.id));
-            
+
             return filteredBackupPosts;
         }
         return [];
@@ -49,7 +55,7 @@ export async function getPostById(id, options = {}) {
         if (isDeleted) {
             return null; // Als de post verwijderd is, retourneer null
         }
-        
+
         // Probeer eerst direct de post op te halen als dat kan
         try {
             const post = await fetchPostById(id, options);
@@ -70,7 +76,7 @@ export async function getPostById(id, options = {}) {
             if (isDeleted) {
                 return null;
             }
-            
+
             return backup.data.find(post => post.id === parseInt(id));
         }
         return null;
@@ -80,10 +86,50 @@ export async function getPostById(id, options = {}) {
 // Business logica voor het toevoegen van een post
 export async function createPost(postData, options = {}) {
     try {
-        return await addPost(postData, options);
+        // Probeer eerst via de server te posten
+        const newPost = await addPost(postData, options);
+
+        // Maak ook een nieuwe backup met de nieuwe post
+        const allPosts = await getPosts();
+        createManualBackup([...allPosts, newPost], "Backup na toevoegen nieuwe post");
+
+        return newPost;
     } catch (e) {
-        console.error("Fout bij het aanmaken van de post:", e);
-        throw e;
+        console.error("Fout bij het aanmaken van de post op de server:", e);
+
+        // Als het niet lukt via de server, maak een lokale versie
+        console.log("Aanmaken lokale post vanwege offline modus of serverfout");
+
+        // Haal de laatste backup op
+        const backup = getLatestBackup();
+
+        if (!backup || !backup.data) {
+            // Als er geen backup is, maak een nieuwe met alleen deze post
+            const localPost = {
+                ...postData,
+                id: generateLocalId(),
+                isLocal: true, // Markeer als lokaal aangemaakt
+                pendingSync: true, // Markeert dat deze nog gesynchroniseerd moet worden
+                createdAt: new Date().toISOString()
+            };
+
+            createManualBackup([localPost], "Eerste lokale post");
+            return localPost;
+        } else {
+            // Anders, voeg toe aan de bestaande backup
+            const localPost = {
+                ...postData,
+                id: generateLocalId(),
+                isLocal: true,
+                pendingSync: true,
+                createdAt: new Date().toISOString()
+            };
+
+            const updatedPosts = [...backup.data, localPost];
+            createManualBackup(updatedPosts, "Nieuwe lokale post toegevoegd");
+
+            return localPost;
+        }
     }
 }
 
@@ -95,7 +141,7 @@ export async function removePost(id, options = {}) {
         if (post) {
             // sla de post op in deleted posts
             saveDeletedPost(post);
-            
+
             try {
                 // Probeer de post te verwijderen, maar vang fouten op
                 await deletePost(id, options);
@@ -105,7 +151,7 @@ export async function removePost(id, options = {}) {
                 // maar beschouw de actie nog steeds als succesvol omdat we de post lokaal hebben opgeslagen
                 console.warn("Kon post niet verwijderen van server, maar wel lokaal gemarkeerd als verwijderd", deleteError);
             }
-            
+
             return true;
         }
         return false;
@@ -119,7 +165,7 @@ export async function removePost(id, options = {}) {
 export async function restoreDeletedPost(post, options = {}) {
     try {
         // Verwijder de 'deletedAt' eigenschap
-        const { deletedAt, ...postData } = post;
+        const {deletedAt, ...postData} = post;
 
         // NIEUWE CODE: Controleer of de post al bestaat op de server
         // Als de post al bestaat, hoeven we deze niet opnieuw toe te voegen
@@ -162,10 +208,19 @@ export function calcReadTime(content, readingSpeed = 'medium') {
     if (seconds === 60) {
         minutes++;
         seconds = 0;
+
+
     }
 
     const minuteText = minutes === 1 ? "minuut" : "min.";
-    return `leestijd: ${minutes} ${minuteText}${seconds ? ` & ${seconds} sec.` : ''}`;
+    if (minutes < 1 && seconds < 10) {
+        return `gewoon een quoteje`;
+        // TODO Quote herkenning maken en subtitel oinder de 10 seconde leestijd passend maken in container
+    } else if (minutes < 1) {
+        return `leestijd: ${seconds}sec.`;
+    } else {
+        return `leestijd: ${minutes} ${minuteText}${seconds ? ` & ${seconds} sec.` : ''}`;
+    }
 }
 
 // Tel het aantal posts
