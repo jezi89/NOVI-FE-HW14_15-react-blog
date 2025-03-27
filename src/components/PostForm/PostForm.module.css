@@ -1,5 +1,5 @@
 /* PostForm Styling */
-.form-container {
+.formContainer {
     max-width: 900px;
     margin: 0 auto;
     padding: 2.5rem;
@@ -9,7 +9,7 @@
 
 }
 
-.form-container h2 {
+.formContainer h2 {
     font-family: var(--font-heading);
     color: var(--color-heading);
     text-align: center;
@@ -19,7 +19,7 @@
     padding-bottom: 0.5rem;
 }
 
-.form-container h2:after {
+.formContainer h2:after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -30,11 +30,11 @@
     background-color: var(--color-secondary);
 }
 
-.form-group {
+.formField {
     margin-bottom: 1.8rem;
 }
 
-.form-group label {
+.formField label {
     display: block;
     margin-bottom: 0.6rem;
     font-weight: 600;
@@ -43,8 +43,8 @@
     letter-spacing: 0.02em;
 }
 
-.form-group input,
-.form-group textarea {
+.formField input,
+.formField textarea {
     width: 100%;
     padding: 0.9rem;
     border: 1px solid var(--color-border);
@@ -56,20 +56,20 @@
     font-size: 1rem;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
+.formField input:focus,
+.formField textarea:focus {
     outline: none;
     border-color: var(--color-tertiary);
     box-shadow: 0 0 0 3px rgba(90, 145, 120, 0.25);
 }
 
-.form-group textarea {
+.formField textarea {
     resize: vertical;
     min-height: 180px;
     line-height: 1.6;
 }
 
-.form-container button {
+.formContainer button {
     background-color: var(--color-tertiary);
     color: var(--color-neutral-light);
     border: none;
@@ -88,13 +88,13 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.form-container button:hover {
+.formContainer button:hover {
     background-color: var(--color-primary-medium);
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-.form-container button:disabled {
+.formContainer button:disabled {
     background-color: var(--color-primary-light);
     opacity: 0.7;
     cursor: not-allowed;
@@ -111,7 +111,21 @@
     font-weight: 500;
 }
 
-.success-message {
+.errorMessage {
+    color: #d9534f;
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+    display: block;
+    font-family: var(--font-accent);
+    font-weight: 500;
+}
+
+.inputError {
+    border-color: #d9534f !important;
+    background-color: rgba(217, 83, 79, 0.05) !important;
+}
+
+.successMessage {
     background-color: rgba(76, 175, 80, 0.1);
     color: #4caf50;
     padding: 1rem;
@@ -132,52 +146,52 @@
 }
 
 /* Form field feedback */
-.form-group.has-error input,
-.form-group.has-error textarea {
+.hasError input,
+.hasError textarea {
     border-color: #d9534f;
     background-color: rgba(217, 83, 79, 0.05);
 }
 
-.form-group.has-success input,
-.form-group.has-success textarea {
+.hasSuccess input,
+.hasSuccess textarea {
     border-color: #4caf50;
     background-color: rgba(76, 175, 80, 0.05);
 }
 
 /* Responsive styles */
 @media (max-width: 768px) {
-    .form-container {
+    .formContainer {
         padding: 2rem 1.5rem;
         margin: 1.5rem auto;
 
     }
     
-    .form-container h2 {
+    .formContainer h2 {
         font-size: 1.8rem;
     }
     
-    .form-container h2:after {
+    .formContainer h2:after {
         width: 60px;
     }
 }
 
 @media (max-width: 480px) {
-    .form-container {
+    .formContainer {
         padding: 1.5rem 1rem;
         margin: 1rem;
     }
     
-    .form-container button {
+    .formContainer button {
         width: 100%;
         padding: 0.8rem 1.5rem;
     }
     
-    .form-group label {
+    .formField label {
         margin-bottom: 0.4rem;
     }
     
-    .form-group input,
-    .form-group textarea {
+    .formField input,
+    .formField textarea {
         padding: 0.8rem;
     }
 }

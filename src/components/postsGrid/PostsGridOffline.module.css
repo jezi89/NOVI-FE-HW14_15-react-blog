@@ -12,6 +12,12 @@
     margin-bottom: 2rem;
 }
 
+.postsHeaderTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .postsHeader h2 {
     font-family: var(--font-heading);
     color: var(--color-heading);
@@ -29,6 +35,58 @@
     width: 60px;
     height: 3px;
     background-color: var(--color-secondary);
+}
+
+/* Connectivity indicators */
+.offlineIndicator,
+.syncingIndicator,
+.syncFailedIndicator {
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.offlineIndicator {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.syncingIndicator {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.syncFailedIndicator {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.offlineIcon,
+.syncingIcon,
+.syncFailedIcon {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+.offlineIcon {
+    color: #dc3545;
+}
+
+.syncingIcon {
+    color: #007bff;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.syncFailedIcon {
+    color: #ffc107;
 }
 
 /* Stats voor posts en verwijderde posts */
@@ -250,6 +308,17 @@
     .postTitle {
         font-size: 1.2rem;
         min-height: 3.2rem;
+    }
+    
+    .postsHeaderTop {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .offlineIndicator,
+    .syncingIndicator,
+    .syncFailedIndicator {
+        margin-top: 0.5rem;
     }
     
     .postStats {

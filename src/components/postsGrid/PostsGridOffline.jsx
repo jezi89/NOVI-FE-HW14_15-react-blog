@@ -4,15 +4,14 @@ import {Link} from "react-router-dom";
 import {useState, useEffect} from "react";
 import BackupButton from "../buttons/BackupButton.jsx";
 import BackupDropdown from "../dropdowns/BackupDropdown.jsx";
-import styles from "./PostsGrid.module.css";
+import styles from "./PostsGridOffline.module.css";
 import buttonStyles from "../buttons/Button.module.css";
-import {createManualBackup, restoreBackup, getDeletedPosts} from "../../services/backupService.js";
 import DeleteButton from "../buttons/DeleteButton.jsx";
-import {removePost} from "../../helpers/postHelpers.js";
 import RecoverPostsDropdown from "../dropdowns/RecoverPostsDropdown.jsx";
-import {useData, DATA_ACTIONS} from "../../contexts/DataContext.jsx";
+import { useData } from "../../contexts/OfflineDataContext.jsx";
+import { getDeletedPosts } from "../../services/backupService.js";
 
-function PostsGrid() {
+function PostsGridOffline() {
     // Dummy tags voor placeholders
     const dummyTags = [
         ['Reizen', 'Europa', 'Cultuur'],
@@ -21,28 +20,31 @@ function PostsGrid() {
         ['Natuur', 'Wandelen', 'Buiten'],
         ['Eten', 'Lokaal', 'Culinair']
     ];
-
+    
     // Gebruik context in plaats van lokale state
-    const {
-        posts,
-        loading,
-        error,
-        usingBackup,
-        backupTimestamp,
+    const { 
+        posts, 
+        loading, 
+        error, 
+        usingBackup, 
+        backupTimestamp, 
         lastBackupCreated,
         deletedPostsCount,
-        dispatch
+        isOffline,
+        syncStatus,
+        dispatch,
+        optimisticDeletePost 
     } = useData();
-
+    
     const {readSpeed} = useReadSpeed();
     const [hoveredPostId, setHoveredPostId] = useState(null);
 
     // Effect om het aantal verwijderde posts bij te werken wanneer dit component mount
     useEffect(() => {
         const deletedPosts = getDeletedPosts();
-        dispatch({
-            type: DATA_ACTIONS.UPDATE_DELETED_POSTS_COUNT,
-            payload: deletedPosts.length
+        dispatch({ 
+            type: 'UPDATE_DELETED_POSTS_COUNT', 
+            payload: deletedPosts.length 
         });
     }, [dispatch]);
 
@@ -50,44 +52,30 @@ function PostsGrid() {
         try {
             // Zoek eerst de post op in de huidige lijst voordat we deze verwijderen
             const postToDelete = posts.find(post => post.id === postId);
-
+            
             if (!postToDelete) {
-                dispatch({
-                    type: DATA_ACTIONS.LOAD_POSTS_ERROR,
-                    payload: "De post kon niet worden gevonden"
-                });
+                console.error("De post kon niet worden gevonden");
                 return;
             }
-
-            // Update de UI direct door de post uit de state te verwijderen
-            dispatch({type: DATA_ACTIONS.DELETE_POST, payload: postId});
-
-            // Probeer de post te verwijderen van de server
-            const result = await removePost(postId);
-
-            if (!result) {
-                console.warn("De post kon niet worden verwijderd van de server, maar blijft verborgen in de UI");
-            }
+            
+            // Optimistic delete handelt alles af
+            await optimisticDeletePost(postId);
+            
         } catch (e) {
             console.error("Fout bij het verwijderen van post:", e);
-            dispatch({
-                type: DATA_ACTIONS.LOAD_POSTS_ERROR,
-                payload: "Er is een fout opgetreden bij het verwijderen. De post blijft verborgen maar probeer later opnieuw."
-            });
         }
     };
 
     const handleRestorePost = (restoredPost) => {
-        // Voeg de herstelde post toe aan de context
-        dispatch({type: DATA_ACTIONS.RESTORE_POST, payload: restoredPost});
+        // Dit wordt nu afgehandeld in de RecoverPostsDropdown component
     };
-
+    
     const handleRestoreBackup = (backupData) => {
         if (backupData) {
-            // Herstel de backup via de context
-            dispatch({
-                type: DATA_ACTIONS.RESTORE_BACKUP,
-                payload: {data: backupData, timestamp: new Date().toISOString()}
+            // Gebruik de bestaande herstel backup actie
+            dispatch({ 
+                type: 'RESTORE_BACKUP', 
+                payload: { data: backupData, timestamp: new Date().toISOString() } 
             });
         }
     };
@@ -95,17 +83,45 @@ function PostsGrid() {
     const handleBackupCreated = (backup) => {
         console.log("Nieuwe backup gemaakt:", backup);
         // Update lastBackupCreated in de context om BackupDropdown te laten re-renderen
-        dispatch({type: DATA_ACTIONS.CREATE_BACKUP});
+        dispatch({ type: 'CREATE_BACKUP' });
+    };
+    
+    // Functie om connectivity status weer te geven
+    const getConnectivityStatus = () => {
+        if (isOffline) {
+            return (
+                <div className={styles.offlineIndicator}>
+                    <span className={styles.offlineIcon}>●</span> Offline modus
+                </div>
+            );
+        }
+        if (syncStatus === 'syncing') {
+            return (
+                <div className={styles.syncingIndicator}>
+                    <span className={styles.syncingIcon}>↻</span> Synchroniseren...
+                </div>
+            );
+        }
+        if (syncStatus === 'failed') {
+            return (
+                <div className={styles.syncFailedIndicator}>
+                    <span className={styles.syncFailedIcon}>⚠</span> Synchronisatie mislukt
+                </div>
+            );
+        }
+        return null;
     };
 
     // Render states
     if (loading) return <p>Posts laden...</p>;
-    if (error) return <p className={styles.errorMessage}>{error}</p>;
 
     return (
         <div>
             <div className={styles.postsHeader}>
-                <h2>Alle Posts {usingBackup && "(uit backup)"}</h2>
+                <div className={styles.postsHeaderTop}>
+                    <h2>Alle Posts {usingBackup && "(uit backup)"}</h2>
+                    {getConnectivityStatus()}
+                </div>
                 <div className={styles.postStats}>
                     <p>Totaal aantal posts: {posts.length}</p>
                     {deletedPostsCount > 0 && (
@@ -132,8 +148,8 @@ function PostsGrid() {
                     onRestore={handleRestoreBackup}
                     lastBackupCreated={lastBackupCreated}
                 />
-                <RecoverPostsDropdown onRestore={handleRestorePost}/>
-                <Link to="/settings" className={`${buttonStyles.settingsLink} ${buttonStyles.rightAlignedButton}`}>
+                <RecoverPostsDropdown />
+                <Link to="/settings" className={buttonStyles.settingsLink}>
                     Instellingen
                 </Link>
             </div>
@@ -179,10 +195,8 @@ function PostsGrid() {
                     <p>Geen posts gevonden</p>
                 )}
             </ul>
-            <p>test</p>
         </ div>
-
     );
 }
 
-export default PostsGrid;
+export default PostsGridOffline;

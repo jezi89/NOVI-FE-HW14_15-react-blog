@@ -17,6 +17,7 @@
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s;
+    gap: 8px;
 }
 
 .dropdownToggle:hover {
@@ -26,6 +27,58 @@
 .dropdownToggle:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+}
+
+/* Loading stijl */
+.loading {
+    position: relative;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.loading:hover {
+    transform: none;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: calc(50% - 8px);
+    right: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+    to { transform: rotate(360deg); }
+}
+
+/* Stijl voor als er verwijderde posts zijn */
+.hasItems {
+    background-color: #28a745;
+}
+
+.hasItems:hover {
+    background-color: #218838;
+}
+
+/* Badge voor het aantal items */
+.countBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    background-color: #dc3545;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 0 4px;
 }
 
 .dropdownMenu {

@@ -1,51 +1,30 @@
-// In src/components/dropdowns/RecoverPostsDropdown.jsx
+// In src/components/dropdowns/RecoverPostsDropdownOffline.jsx
 import {useState, useEffect, useRef} from 'react';
 import {getDeletedPosts} from '../../services/backupService.js';
-import {restoreDeletedPost} from '../../helpers/postHelpers.js';
-import {useData, DATA_ACTIONS} from '../../contexts/DataContext.jsx';
+import {useData} from '../../contexts/OfflineDataContext.jsx';
 import styles from './Dropdown.module.css';
 
-function RecoverPostsDropdown({onRestore}) {
+function RecoverPostsDropdownOffline() {
     const [isOpen, setIsOpen] = useState(false);
-    const [deletedPosts, setDeletedPosts] = useState([]);
+    const [localDeletedPosts, setLocalDeletedPosts] = useState([]);
     const [loading, setLoading] = useState(false);
     const dropdownRef = useRef(null);
+    
+    // Gebruik de context
+    const { 
+        deletedPostsCount, 
+        dispatch, 
+        optimisticRestorePost 
+    } = useData();
 
-    // We halen de waardes uit de context in plaats van de state
-    const {deletedPostsCount, dispatch} = useData();
-
+    // Effect om de lokale lijst van verwijderde posts te laden
+    // wanneer dropdown wordt geopend of deletedPostsCount verandert
     useEffect(() => {
         if (isOpen || deletedPostsCount > 0) {
             const posts = getDeletedPosts();
-            setDeletedPosts(posts);
+            setLocalDeletedPosts(posts);
         }
     }, [isOpen, deletedPostsCount]);
-
-    // Laad verwijderde posts wanneer dropdown wordt geopend
-    useEffect(() => {
-        if (isOpen) {
-            const posts = getDeletedPosts();
-            setDeletedPosts(posts);
-
-            // Update de context met het aantal verwijderde posts
-            dispatch({
-                type: DATA_ACTIONS.UPDATE_DELETED_POSTS_COUNT,
-                payload: posts.length
-            });
-        }
-    }, [isOpen, dispatch]);
-
-    // Bijwerken van verwijderde posts aantal bij mount
-    useEffect(() => {
-        const posts = getDeletedPosts();
-        setDeletedPosts(posts);
-
-        // Update de context met het aantal verwijderde posts
-        dispatch({
-            type: DATA_ACTIONS.UPDATE_DELETED_POSTS_COUNT,
-            payload: posts.length
-        });
-    }, [dispatch]);
 
     // Sluit dropdown wanneer er buiten wordt geklikt
     useEffect(() => {
@@ -68,23 +47,12 @@ function RecoverPostsDropdown({onRestore}) {
     const handleRestore = async (post) => {
         setLoading(true);
         try {
-            const restoredPost = await restoreDeletedPost(post);
-
-            // Verwijder post uit de lijst van verwijderde posts
-            const updatedDeletedPosts = deletedPosts.filter(p => p.id !== post.id);
-            setDeletedPosts(updatedDeletedPosts);
-
-            // Update de context met het nieuwe aantal verwijderde posts
-            dispatch({
-                type: DATA_ACTIONS.UPDATE_DELETED_POSTS_COUNT,
-                payload: updatedDeletedPosts.length
-            });
-
-            // Informeer de parent component
-            if (onRestore) {
-                onRestore(restoredPost);
-            }
-
+            // Gebruik optimistic restore functie uit context
+            await optimisticRestorePost(post);
+            
+            // Update lokale lijst van verwijderde posts
+            setLocalDeletedPosts(prev => prev.filter(p => p.id !== post.id));
+            
             alert(`Post "${post.title}" is hersteld!`);
         } catch (e) {
             console.error("Fout bij het herstellen van de post:", e);
@@ -105,13 +73,12 @@ function RecoverPostsDropdown({onRestore}) {
             minute: '2-digit'
         });
     };
-
+    
     // Bepaal badge styling en counter 
-    const showCount = deletedPosts.length > 0;
+    const showCount = deletedPostsCount > 0;
     const badgeClass = showCount ? styles.countBadge : '';
 
     return (
-
         <div className={styles.dropdownContainer} ref={dropdownRef}>
             <button
                 className={`${styles.dropdownToggle} ${showCount ? styles.hasItems : ''}`}
@@ -119,8 +86,8 @@ function RecoverPostsDropdown({onRestore}) {
                 disabled={loading}
             >
                 Verwijderde posts
-                {deletedPostsCount > 0 && (
-                    <span className={badgeClass}>{deletedPosts.length}</span>
+                {showCount && (
+                    <span className={badgeClass}>{deletedPostsCount}</span>
                 )}
             </button>
 
@@ -128,13 +95,13 @@ function RecoverPostsDropdown({onRestore}) {
                 <div className={styles.dropdownMenu}>
                     <h3 className={styles.dropdownTitle}>Verwijderde posts</h3>
 
-                    {deletedPosts.length === 0 ? (
+                    {localDeletedPosts.length === 0 ? (
                         <p className={styles.emptyMessage}>
                             Geen verwijderde posts gevonden.
                         </p>
                     ) : (
                         <ul className={styles.postsList}>
-                            {deletedPosts.map(post => (
+                            {localDeletedPosts.map(post => (
                                 <li key={post.id} className={styles.postItem}>
                                     <div className={styles.postInfo}>
                                         <h4 className={styles.postTitle}>{post.title}</h4>
@@ -157,10 +124,9 @@ function RecoverPostsDropdown({onRestore}) {
                         </ul>
                     )}
                 </div>
-
             )}
         </div>
     );
 }
 
-export default RecoverPostsDropdown;
+export default RecoverPostsDropdownOffline;

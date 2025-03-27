@@ -1,26 +1,19 @@
-import React from 'react';
-import InputField from './InputField';
-
-/**
- * TextInputField component - specifiek voor tekstinvoer
- * @param {Object} props - Component properties
- * @param {string} props.id - Input ID
- * @param {string} props.name - Input name
- * @param {string} props.label - Label text
- * @param {Object} props.error - Error message from form validation
- * @param {Object} props.inputProps - Additional props for input element
- * @returns {JSX.Element}
- */
-function TextInputField({ id, name, label, error, inputProps = {} }) {
+// TextInputField.jsx
+function TextInputField({id, name, label, value, onChange, error, styles, ...props}) {
     return (
-        <InputField
-            id={id}
-            name={name}
-            label={label}
-            type="text"
-            error={error}
-            inputProps={inputProps}
-        />
+        <div className={`${styles.formField} ${error ? styles.hasError : ''}`}>
+            <label htmlFor={id}>{label}</label>
+            <input
+                type="text"
+                id={id}
+                name={name}
+                value={value}
+                onChange={onChange}
+                className={error ? styles.inputError : ""}
+                {...props}
+            />
+            {error && <p className={styles.errorMessage}>{error}</p>}
+        </div>
     );
 }
 

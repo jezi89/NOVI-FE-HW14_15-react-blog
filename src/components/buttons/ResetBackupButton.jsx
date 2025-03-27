@@ -1,28 +1,23 @@
-import { resetToInitialBackup } from "../../services/backupService";
+import React from 'react';
 import styles from "./Button.module.css";
 
-function ResetBackupButton({ onBackupReset }) {
+function ResetBackupButton({ onBackupReset, buttonText, isLoading }) {
     const handleReset = () => {
-        const backup = resetToInitialBackup();
-        
-        if (!backup) {
-            alert("Geen initiële backup gevonden om naar terug te zetten");
-            return;
+        // Bevestiging vragen voordat we resetten
+        if (window.confirm("Weet je zeker dat je alle posts wilt terugzetten naar de oorspronkelijke database-waardes?")) {
+            if (onBackupReset) {
+                onBackupReset();
+            }
         }
-        
-        if (onBackupReset) {
-            onBackupReset(backup);
-        }
-
-        alert(`Backup succesvol gereset naar initiële versie van: ${new Date(backup.timestamp).toLocaleString()}`);
     };
 
     return (
         <button
             onClick={handleReset}
-            className={styles.resetButton}
+            className={`${styles.resetButton} ${isLoading ? styles.loading : ''}`}
+            disabled={isLoading}
         >
-            Reset naar initiële backup
+            {isLoading ? "Bezig met resetten..." : (buttonText || "Reset naar initiële backup")}
         </button>
     );
 }
