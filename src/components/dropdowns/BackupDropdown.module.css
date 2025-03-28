@@ -1,0 +1,79 @@
+/* Import gemeenschappelijke dropdown stijlen */
+@import '../../styles/dropdowns.css';
+
+/* Component-specifieke stijlen en overrides */
+.dropdownContainer {
+  composes: dropdown-container;
+}
+
+.dropdownButton {
+  composes: dropdown-button;
+}
+
+.dropdownArrow {
+  composes: dropdown-arrow;
+}
+
+.dropdownMenu {
+  composes: dropdown-menu;
+}
+
+.dropdownHeader {
+  composes: dropdown-header;
+}
+
+.dropdownHeader h3 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.dropdownSubtext {
+  composes: dropdown-subtext;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.backupList {
+  composes: dropdown-list;
+}
+
+.backupItem {
+  composes: dropdown-item;
+}
+
+.currentBackup {
+  composes: dropdown-item-active;
+}
+
+.currentLabel {
+  composes: dropdown-item-active-label;
+}
+
+.backupInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.backupName {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+.backupDate {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.125rem;
+}
+
+.noBackups {
+  composes: dropdown-empty;
+}
+
+.dropdownFooter {
+  composes: dropdown-footer;
+}
+
+.loading {
+  composes: dropdown-loading;
+}

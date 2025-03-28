@@ -5,31 +5,141 @@
     background-color: var(--color-background);
     border-radius: 8px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-    padding-top: var(--container-padding-top);
+    padding-top: var(--content-padding);
 }
 
-.postsPage h1 {
+.postsHeader {
+    margin-bottom: 2rem;
+}
+
+.postsHeaderTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.postsHeader h2 {
     font-family: var(--font-heading);
     color: var(--color-heading);
-    margin-bottom: 2rem;
-    text-align: center;
-    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 0.5rem;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
     position: relative;
     padding-bottom: 0.5rem;
 }
 
-.postsPage h1:after {
+.postsHeader h2:after {
     content: '';
     position: absolute;
     bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
+    left: 0;
+    width: 60px;
     height: 3px;
     background-color: var(--color-secondary);
 }
 
-.postsPage :global(.posts-list) {
+/* Connectivity indicators */
+.offlineIndicator,
+.syncingIndicator,
+.syncFailedIndicator {
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.offlineIndicator {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.syncingIndicator {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.syncFailedIndicator {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.offlineIcon,
+.syncingIcon,
+.syncFailedIcon {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+.offlineIcon {
+    color: #dc3545;
+}
+
+.syncingIcon {
+    color: #007bff;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.syncFailedIcon {
+    color: #ffc107;
+}
+
+/* Stats voor posts en verwijderde posts */
+.postStats {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin: 0.75rem 0;
+}
+
+.deletedPostsCounter {
+    display: inline-flex;
+    align-items: center;
+    background-color: #dc3545;
+    color: white;
+    padding: 0.35rem 0.8rem;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.deletedPostsCounter:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+.backupInfo {
+    font-family: var(--font-accent);
+    font-size: 0.85rem;
+    color: var(--color-tertiary);
+    font-style: italic;
+    margin-top: 0.5rem;
+}
+
+.backupControls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+}
+
+.errorMessage {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    font-family: var(--font-accent);
+    font-weight: 500;
+}
+
+.postsList {
     list-style: none;
     padding: 0;
     display: grid;
@@ -38,7 +148,7 @@
     margin-top: 2.5rem;
 }
 
-.postsPage :global(.post-item) {
+.postItem {
     border-radius: 8px;
     border: none;
     padding: 0;
@@ -52,12 +162,12 @@
     height: 100%;
 }
 
-.postsPage :global(.post-item:hover) {
+.postItem:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-.postsPage :global(.post-item a) {
+.postItem a {
     text-decoration: none;
     color: inherit;
     display: flex;
@@ -67,7 +177,7 @@
     height: 100%;
 }
 
-.postsPage :global(.post-item:before) {
+.postItem:before {
     content: '';
     position: absolute;
     top: 0;
@@ -119,7 +229,7 @@
     font-family: var(--font-accent);
     font-size: 0.7rem;
     color: var(--color-tertiary);
-    background-color: rgba(var(--color-tertiary-rgb), 0.08);
+    background-color: rgba(90, 145, 120, 0.08); /* variabele werkt hier niet */
     padding: 0.2rem 0.5rem;
     border-radius: 30px;
     transition: all 0.3s;
@@ -127,7 +237,7 @@
 }
 
 .postTag:hover {
-    background-color: rgba(var(--color-tertiary-rgb), 0.15);
+    background-color: rgba(90, 145, 120, 0.15); /* variabele werkt hier niet */
     transform: translateY(-1px);
 }
 
@@ -140,7 +250,7 @@
     color: var(--color-primary-medium);
     margin-top: auto;
     padding-top: 1rem;
-    border-top: 1px solid rgba(var(--color-border-rgb), 0.2);
+    border-top: 1px solid rgba(28, 61, 52, 0.2); /* variabele werkt hier niet */
 }
 
 .metaLeft, .metaRight {
@@ -167,7 +277,7 @@
 .emptyState {
     text-align: center;
     padding: 3rem 1rem;
-    background-color: rgba(var(--color-tertiary-rgb), 0.05);
+    background-color: rgba(90, 145, 120, 0.05); /* variabele werkt hier niet */
     border-radius: 8px;
     margin-top: 2rem;
 }
@@ -189,10 +299,9 @@
 @media (max-width: 768px) {
     .postsPage {
         padding: 2rem 1.5rem;
-        padding-top: var(--container-padding-top);
     }
     
-    .postsPage :global(.posts-list) {
+    .postsList {
         gap: 1.5rem;
     }
     
@@ -200,19 +309,35 @@
         font-size: 1.2rem;
         min-height: 3.2rem;
     }
+    
+    .postsHeaderTop {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .offlineIndicator,
+    .syncingIndicator,
+    .syncFailedIndicator {
+        margin-top: 0.5rem;
+    }
+    
+    .postStats {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
 }
 
 @media (max-width: 480px) {
     .postsPage {
         padding: 1.5rem 1rem;
-        padding-top: var(--container-padding-top);
     }
     
-    .postsPage :global(.posts-list) {
+    .postsList {
         grid-template-columns: 1fr;
     }
     
-    .postsPage h1:after {
-        width: 60px;
+    .postsHeader h2:after {
+        width: 50px;
     }
 }

@@ -1,0 +1,197 @@
+/* Gemeenschappelijke layout stijlen */
+:root {
+  /* Layout variabelen */
+  --layout-max-width: 1200px;
+  --layout-padding-small: 1rem;
+  --layout-padding-medium: 1.5rem;
+  --layout-padding-large: 2.5rem;
+  --layout-gap-small: 0.5rem;
+  --layout-gap-medium: 1rem;
+  --layout-gap-large: 2rem;
+  --layout-border-radius: 8px;
+  --layout-box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  --layout-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --layout-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Container layouts */
+.container {
+  width: 100%;
+  max-width: var(--layout-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--layout-padding-medium);
+  padding-right: var(--layout-padding-medium);
+}
+
+.container-narrow {
+  max-width: 800px;
+}
+
+.container-wide {
+  max-width: 1400px;
+}
+
+.container-fluid {
+  max-width: 100%;
+}
+
+/* Page layout */
+.page-layout {
+  width: 100%;
+  margin: 0 auto;
+  padding-top: var(--container-margin-top);
+  padding-bottom: var(--layout-padding-large);
+}
+
+/* Card layout */
+.card {
+  background-color: var(--color-neutral-light);
+  border-radius: var(--layout-border-radius);
+  box-shadow: var(--layout-card-shadow);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--layout-hover-shadow);
+}
+
+.card-header {
+  padding: var(--layout-padding-medium);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.card-body {
+  padding: var(--layout-padding-medium);
+}
+
+.card-footer {
+  padding: var(--layout-padding-medium);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Grid layouts */
+.grid {
+  display: grid;
+  gap: var(--layout-gap-medium);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-auto {
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+/* Flex layouts */
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  justify-content: space-between;
+}
+
+.flex-around {
+  justify-content: space-around;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+/* Margin en padding utilities */
+.m-0 { margin: 0; }
+.m-1 { margin: 0.25rem; }
+.m-2 { margin: 0.5rem; }
+.m-3 { margin: 1rem; }
+.m-4 { margin: 1.5rem; }
+.m-5 { margin: 3rem; }
+
+.mt-auto { margin-top: auto; }
+.mr-auto { margin-right: auto; }
+.mb-auto { margin-bottom: auto; }
+.ml-auto { margin-left: auto; }
+
+.p-0 { padding: 0; }
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 1rem; }
+.p-4 { padding: 1.5rem; }
+.p-5 { padding: 3rem; }
+
+/* Schaduwen */
+.shadow-sm {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.shadow {
+  box-shadow: var(--layout-card-shadow);
+}
+
+.shadow-lg {
+  box-shadow: var(--layout-box-shadow);
+}
+
+/* Responsieve aanpassingen */
+@media (max-width: 1200px) {
+  .container {
+    max-width: 100%;
+  }
+  
+  .grid-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .grid-3, .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: var(--layout-padding-small);
+    padding-right: var(--layout-padding-small);
+  }
+  
+  .grid-2, .grid-3, .grid-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-md-column {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header, .card-body, .card-footer {
+    padding: 0.75rem;
+  }
+}

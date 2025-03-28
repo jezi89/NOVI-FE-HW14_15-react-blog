@@ -1,115 +1,164 @@
-import { useActionState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import TextInputField from './TextInputField';
 import TextAreaField from './TextAreaField';
-import './PostForm.css';
+import styles from './PostForm.module.css';
+import { calculateReadTimeinMinutes, createPost } from "../../helpers/postHelpers.js";
+import { useData } from "../../contexts/DataContext.jsx";
 
 function PostForm() {
     const navigate = useNavigate();
+    const [title, setTitle] = useState("");
+    const [subtitle, setSubtitle] = useState("");
+    const [content, setContent] = useState("");
+    const [author, setAuthor] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formResult, setFormResult] = useState(null);
 
-    const [result, submitAction, isPending] = useActionState(
-        async (previousState, formData) => {
-            // Extract form values
-            const title = formData.get("title");
-            const subtitle = formData.get("subtitle");
-            const content = formData.get("content");
-            const author = formData.get("author");
+    // Gebruik DataContext om te weten of we in offline modus zijn
+    const { offlineMode, loadPosts } = useData();
 
-            // Validate input fields
-            const errors = {};
-            if (!title?.trim()) errors.title = "Titel is verplicht";
-            if (!subtitle?.trim()) errors.subtitle = "Ondertitel is verplicht";
-            if (!author?.trim()) errors.author = "Auteur is verplicht";
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setFormResult(null);
 
-            if (!content?.trim()) {
-                errors.content = "Bericht is verplicht";
-            } else if (content.length < 30) {
-                errors.content = "Bericht moet minimaal 30 karakters bevatten";
-            } else if (content.length > 2000) {
-                errors.content = "Bericht mag maximaal 2000 karakters bevatten";
-            }
+        // Valideer input velden
+        const errors = {};
+        if (!title?.trim()) errors.title = "Titel is verplicht";
+        if (!subtitle?.trim()) errors.subtitle = "Ondertitel is verplicht";
+        if (!author?.trim()) errors.author = "Auteur is verplicht";
 
-            // If there are validation errors, return them
-            if (Object.keys(errors).length > 0) {
-                return { type: "error", errors };
-            }
+        if (!content?.trim()) {
+            errors.content = "Bericht is verplicht";
+        } else if (content.length < 30) {
+            errors.content = "Bericht moet minimaal 30 karakters bevatten";
+        } else if (content.length > 2000) {
+            errors.content = "Bericht mag maximaal 2000 karakters bevatten";
+        }
 
-            // Calculate read time (words * 0.3 / 100)
-            const wordCount = content.trim().split(/\s+/).length;
-            const readTimeRaw = wordCount * 0.3 / 100;
-            const readTime = Math.round(readTimeRaw);
+        // Als er validatiefouten zijn, geef ze weer
+        if (Object.keys(errors).length > 0) {
+            setFormResult({ type: "error", errors });
+            setIsSubmitting(false);
+            return;
+        }
 
-            // Create the complete post object
-            const completePost = {
-                title,
-                subtitle,
-                content,
-                author,
-                created: new Date().toISOString(),
-                readTime,
-                comments: 0,
-                shares: 0
-            };
+        // Bereken leestijd
+        const readTime = calculateReadTimeinMinutes(content);
 
-            // Log the complete post to console
-            console.log(completePost);
+        // Maak het volledige post object
+        const completePost = {
+            title,
+            subtitle,
+            content,
+            author,
+            created: new Date().toISOString(),
+            readTime,
+            comments: 0,
+            shares: 0
+        };
 
-            // Wait a bit to simulate processing
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+            // Gebruik de createPost functie die we hebben aangepast voor offline werking
+            const newPost = await createPost(completePost);
 
-            // After successful submission, redirect to posts page
-            navigate("/posts");
+            // Herlaad de posts in de context om de nieuwe post direct weer te geven
+            await loadPosts(true);
 
-            return {
+            setFormResult({
                 type: "success",
-                message: "Post succesvol aangemaakt!"
-            };
-        },
-        null // Initial state
-    );
+                message: offlineMode ?
+                    "Post succesvol lokaal opgeslagen! (Je bent offline)" :
+                    "Post succesvol aangemaakt!"
+            });
+
+            // Na succesvolle indiening, navigeer naar de detailpagina of posts overzicht
+            if (newPost && newPost.id) {
+                setTimeout(() => navigate(`/posts/${newPost.id}`), 1500);
+            } else {
+                setTimeout(() => navigate('/posts'), 1500);
+            }
+        } catch (e) {
+            console.error("Fout bij het opslaan van de post:", e);
+            setFormResult({
+                type: "error",
+                message: "Er ging iets mis bij het opslaan van de post."
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
 
     return (
-        <div className="form-container">
-            <h2>Nieuwe Blogpost</h2>
+        <div className={styles.formContainer}>
+            <h2 className={styles.formTitle}>Nieuwe Blogpost</h2>
 
-            {result?.type === "success" && (
-                <p className="success-message">{result.message}</p>
+            {offlineMode && (
+                <div className={styles.offlineWarning}>
+                    Je bent offline. De post wordt lokaal opgeslagen en gesynchroniseerd
+                    zodra je weer online bent.
+                </div>
             )}
 
-            {isPending && <p className="loading">Bezig met verzenden...</p>}
+            {formResult?.type === "success" && (
+                <p className={styles.successMessage}>{formResult.message}</p>
+            )}
 
-            <form action={submitAction}>
-                <TextInputField 
+            {formResult?.type === "error" && formResult.message && (
+                <p className={styles.errorMessage}>{formResult.message}</p>
+            )}
+
+            {isSubmitting && <p className={styles.loading}>Bezig met verzenden...</p>}
+
+            <form onSubmit={handleSubmit}>
+                <TextInputField
                     id="title"
                     name="title"
                     label="Titel"
-                    error={result?.errors?.title}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    error={formResult?.errors?.title}
+                    styles={styles}
                 />
 
-                <TextInputField 
+                <TextInputField
                     id="subtitle"
                     name="subtitle"
                     label="Ondertitel"
-                    error={result?.errors?.subtitle}
+                    value={subtitle}
+                    onChange={(e) => setSubtitle(e.target.value)}
+                    error={formResult?.errors?.subtitle}
+                    styles={styles}
                 />
 
-                <TextInputField 
+                <TextInputField
                     id="author"
                     name="author"
                     label="Auteur"
-                    error={result?.errors?.author}
+                    value={author}
+                    onChange={(e) => setAuthor(e.target.value)}
+                    error={formResult?.errors?.author}
+                    styles={styles}
                 />
 
-                <TextAreaField 
+                <TextAreaField
                     id="content"
                     name="content"
                     label="Bericht"
-                    error={result?.errors?.content}
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    error={formResult?.errors?.content}
+                    styles={styles}
                     inputProps={{ rows: 10 }}
                 />
 
-                <button type="submit" disabled={isPending}>
-                    {isPending ? 'Bezig met verzenden...' : 'Verzenden'}
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={styles.submitButton}
+                >
+                    {isSubmitting ? 'Bezig met verzenden...' : (offlineMode ? 'Lokaal opslaan' : 'Verzenden')}
                 </button>
             </form>
         </div>

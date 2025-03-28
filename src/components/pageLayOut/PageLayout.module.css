@@ -1,0 +1,25 @@
+.pageLayout {
+    padding-top: var(--navbar-height);
+    width: 100%;
+    box-sizing: border-box;
+    min-height: calc(100vh - var(--navbar-height));
+    position: relative;
+    overflow-x: hidden;
+}
+
+.fullHeight {
+    min-height: 100vh;
+}
+
+.innerContainer {
+    width: 100%;
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+    padding: var(--layout-padding-medium);
+}
+
+@media (max-width: 768px) {
+    .innerContainer {
+        padding: var(--layout-padding-small);
+    }
+}

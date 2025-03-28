@@ -1,0 +1,198 @@
+/* Import gemeenschappelijke button stijlen */
+@import '../../styles/buttons.css';
+
+/* Specifieke stijlen voor elke knop */
+.buttonBase {
+    composes: button-base;
+}
+
+.actionButton {
+    composes: button-base button-small;
+}
+
+.loading {
+    composes: button-loading;
+}
+
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    position: relative;
+}
+
+.disabledOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    z-index: 5;
+}
+
+/* Specifieke stijlen voor elke knop */
+.backupButton {
+    composes: button-base button-primary;
+}
+
+.restoreButton {
+    composes: button-base button-secondary;
+}
+
+.resetButton {
+    composes: button-base button-tertiary;
+}
+
+/* Backup naam invoerveld container */
+.backupNameContainer {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    min-width: 400px;
+}
+
+.backupNameInputWrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.backupNameInput {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--dropdown-border);
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.inputError {
+    border-color: var(--form-input-error-border);
+}
+
+.errorText {
+    color: var(--form-error-color);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+}
+
+.backupNameSaveButton {
+    composes: button-base button-primary button-small;
+}
+
+.backupNameCancelButton {
+    composes: button-base button-neutral button-small;
+}
+
+/* Voor de clear storage knop */
+.clearStorageButton {
+    composes: button-base button-danger button-icon;
+    position: relative;
+}
+
+/* Link naar instellingen pagina */
+.settingsLink {
+    composes: button-base button-neutral;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settingsLink:hover {
+    color: white;
+    text-decoration: none;
+}
+
+/* Voor de delete knop */
+.deleteButton {
+    background-color: rgba(220, 53, 69, 0.8);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.4rem;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.25rem;
+    z-index: 10;
+    opacity: 0;
+    transition: all 0.3s;
+    border-radius: 50%;
+    width: 2.2rem;
+    height: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.deleteButton:hover {
+    background-color: rgba(220, 53, 69, 1);
+    transform: translateY(0) !important;
+}
+
+.deleteButton:focus {
+    outline: 2px solid #dc3545;
+    outline-offset: 2px;
+    opacity: 1;
+}
+
+/* Trash icon styling */
+.trashIcon {
+    width: 1.2rem;
+    height: 1.2rem;
+    fill: currentColor;
+}
+
+/* Stijl voor bevestigingsmodus */
+.deleteConfirm {
+    background-color: rgba(220, 53, 69, 1);
+    opacity: 1;
+    border-radius: 4px;
+    width: auto;
+    height: auto;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.7rem;
+    display: flex;
+    align-items: center;
+}
+
+/* X-knop om te annuleren */
+.cancelButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.cancelButton:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Animate the button when post is hovered */
+.deleteButton {
+    transform: scale(0.7);
+}
+
+:global(.postItem:hover) .deleteButton {
+    opacity: 0.9;
+    transform: scale(1);
+}
+
+/* Knoppengroep voor meerdere knoppen in een rij */
+.buttonGroup {
+    composes: button-group;
+}
+
+.rightAlignedButton {
+    composes: button-right;
+}

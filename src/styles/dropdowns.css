@@ -1,0 +1,203 @@
+/* Gemeenschappelijke stijlen voor dropdown componenten */
+:root {
+  --dropdown-bg: white;
+  --dropdown-border: rgba(0, 0, 0, 0.05);
+  --dropdown-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  --dropdown-hover-bg: #f5f5f5;
+  --dropdown-active-bg: #e8f4ff; 
+  --dropdown-active-hover-bg: #d8ecff;
+  --dropdown-active-border: #0066cc;
+  --dropdown-active-text: #0066cc;
+  --dropdown-header-bg: var(--color-secondary);
+  --dropdown-header-text: white;
+  --dropdown-footer-bg: #f5f5f5;
+  --dropdown-item-padding: 0.75rem 1rem;
+  --dropdown-title-size: 0.875rem;
+  --dropdown-subtitle-size: 0.75rem;
+  --dropdown-border-radius: 6px;
+  --dropdown-animation-speed: 0.2s;
+}
+
+/* Base container styling */
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Base dropdown button styling */
+.dropdown-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Dropdown arrow indicator */
+.dropdown-arrow {
+  font-size: 0.625rem; /* 10px */
+  transition: transform var(--dropdown-animation-speed);
+}
+
+.dropdown-container:hover .dropdown-arrow {
+  transform: translateY(2px);
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  min-width: 280px;
+  background-color: var(--dropdown-bg);
+  border-radius: var(--dropdown-border-radius);
+  box-shadow: var(--dropdown-shadow);
+  z-index: 100;
+  overflow: hidden;
+  animation: fadeIn var(--dropdown-animation-speed) ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Dropdown header */
+.dropdown-header {
+  padding: 0.75rem 1rem;
+  background-color: var(--dropdown-header-bg);
+  color: var(--dropdown-header-text);
+  border-bottom: 1px solid var(--dropdown-border);
+}
+
+.dropdown-header h3 {
+  margin: 0;
+  font-size: var(--dropdown-title-size);
+  font-weight: 600;
+}
+
+.dropdown-subtext {
+  font-size: var(--dropdown-subtitle-size);
+  margin-top: 0.25rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Dropdown list */
+.dropdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  padding: var(--dropdown-item-padding);
+  border-bottom: 1px solid var(--dropdown-border);
+  cursor: pointer;
+  transition: background-color var(--dropdown-animation-speed);
+}
+
+.dropdown-item:hover {
+  background-color: var(--dropdown-hover-bg);
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+/* Active/current state */
+.dropdown-item-active {
+  background-color: var(--dropdown-active-bg);
+}
+
+.dropdown-item-active:hover {
+  background-color: var(--dropdown-active-hover-bg);
+}
+
+.dropdown-item-active-label {
+  font-size: 0.75rem;
+  color: var(--dropdown-active-text);
+  font-weight: normal;
+  font-style: italic;
+}
+
+/* Dropdown footer */
+.dropdown-footer {
+  padding: 0.5rem 1rem;
+  background-color: var(--dropdown-footer-bg);
+  border-top: 1px solid var(--dropdown-border);
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #6c757d);
+}
+
+/* Empty state */
+.dropdown-empty {
+  padding: 1.25rem 1rem;
+  text-align: center;
+  color: var(--color-text-muted, #6c757d);
+  font-style: italic;
+}
+
+/* Badge styling */
+.dropdown-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  background-color: #dc3545;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 0 0.25rem;
+}
+
+/* Loading state */
+.dropdown-loading::after {
+  content: "";
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  top: calc(50% - 0.5rem);
+  right: 0.625rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* Focus state for accessibility */
+.dropdown-button:focus {
+  outline: 2px solid var(--color-primary, #1c3d34);
+  outline-offset: 2px;
+}
+
+.dropdown-item:focus {
+  outline: 2px solid var(--color-primary, #1c3d34);
+  outline-offset: -2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dropdown-menu {
+    min-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dropdown-menu {
+    width: 280px;
+    max-height: 60vh;
+  }
+  
+  .dropdown-item {
+    padding: 0.875rem 1rem;
+  }
+}
